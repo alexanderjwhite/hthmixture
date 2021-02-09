@@ -123,6 +123,9 @@ gamma <- 1:k %>%
     A_k <- estimate %>% 
       purrr::pluck("Ahat")
     
+    sig_vec <- estimate %>% 
+      purrr::pluck("sigvec")
+    
     mu_mat <- (stack_X %>% 
                  bind_cols(int = rep(1,N)) %>% 
                  as.matrix()) %*% A_k
@@ -135,8 +138,8 @@ gamma <- 1:k %>%
       gam[i] <- 1:m %>% 
         purrr::map_dbl(
           .f = function(.y){
-            dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_i[.y])
-            # dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = 1)
+            # dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_i[.y])
+            dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_vec[.y])
           }
         ) %>%
         log() %>% 

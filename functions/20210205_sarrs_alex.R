@@ -53,6 +53,8 @@ SARRS <- function(Y,X,r,lam,ptype,V0=NULL){
   B2 <- matrix(fit2$beta[-1],nrow=p+1,ncol=r)
   B2[p+1,] <- B2[p+1,]+fit2$beta[1]
   
+  
   Ahat= B2 %*% t(V1)
-  return(list(Ahat=Ahat))
+  sigvec = apply(Y- cbind(X,rep(1,nrow(X)))%*% Ahat, 2, sd)
+  return(list(Ahat=Ahat,sigvec=sigvec))
 }

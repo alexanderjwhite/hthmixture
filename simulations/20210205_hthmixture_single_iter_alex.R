@@ -234,9 +234,9 @@ k <- prob %>% length()
 nvld <- 1e4
 rho <- c(0,0,0)
 sigma <- 0.01
-p <- 3
-m <- 3
-s <- 1
+p <- 50
+m <- 20
+s <- 15
 r <- c(2,2,2)
 b <- c(5,10,15)
 int <- prob %>% cumsum()
@@ -347,6 +347,9 @@ gamma <- 1:k %>%
     A_k <- estimate %>% 
       purrr::pluck("Ahat")
     
+    sig_vec <- estimate %>% 
+      purrr::pluck("sigvec")
+    
     mu_mat <- (stack_X %>% 
                  bind_cols(int = rep(1,N)) %>% 
                  as.matrix()) %*% A_k
@@ -359,7 +362,8 @@ gamma <- 1:k %>%
       gam[i] <- 1:m %>% 
         purrr::map_dbl(
           .f = function(.y){
-            dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_i[.y])
+            # dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_i[.y])
+            dnorm(stack_Y[i,.y], mean = mu_i[.y], sd = sig_vec[.y])
           }
         ) %>%
         log() %>% 
