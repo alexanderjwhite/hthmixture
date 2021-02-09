@@ -225,20 +225,20 @@ NMF::aheatmap(abs(A_shift-A1), Rowv = NA, Colv = NA)
 
 ################################################
 
-
+set.seed(19921124)
 lam <- 1
 maxiter <- 50
-N <- 5000
+N <- 200
 prob <- c(0.2, 0.3, 0.5)
 k <- prob %>% length()
 nvld <- 1e4
 rho <- c(0,0,0)
 sigma <- 0.01
-p <- 50
-m <- 500
-s <- 15
+p <- 3
+m <- 3
+s <- 1
 r <- c(2,2,2)
-b <- c(5e3,10e3,15e3)
+b <- c(5,10,15)
 int <- prob %>% cumsum()
 rand_assign <- runif(N)
 
