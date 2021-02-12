@@ -4,16 +4,16 @@ set.seed(19921124)
 lam <- 1
 maxiter <- 50
 N <- 200
-prob <- c(0.2, 0.3, 0.5)
+prob <- c(0.5,0.5)
 k <- prob %>% length()
 nvld <- 1e4
-rho <- c(0,0,0)
-sigma <- 0.01
+rho <- c(0,0)
+sigma <- 1
 p <- 50
 m <- 20
-s <- 15
-r <- c(2,2,2)
-b <- c(5,10,15)
+s <- 20
+r <- c(2,2)
+b <- c(2,3)
 int <- prob %>% cumsum()
 rand_assign <- runif(N)
 if(k*s > p){print("FOR SEPARATION, VERIFY THAT K*S < P")}
@@ -153,7 +153,7 @@ while(conv>0 & iter < maxiter){
       gam <- array(dim = N)
       for(i in 1:N){
         mu_i <- mu_mat[i,]
-        sig_i <- ((stack_Y[i,]-mu_i) %>% matrix()) %*% t((stack_Y[i,]-mu_i) %>% matrix() %>% diag()) %>% abs() %>% sqrt()
+        # sig_i <- ((stack_Y[i,]-mu_i) %>% matrix()) %*% t((stack_Y[i,]-mu_i) %>% matrix() %>% diag()) %>% abs() %>% sqrt()
         # gam[i, .x] <- 1:m %>% 
         gam[i] <- 1:m %>% 
           purrr::map_dbl(
@@ -163,18 +163,30 @@ while(conv>0 & iter < maxiter){
             }
           ) %>%
           log() %>% 
-          sum() %>% 
-          exp()
+          sum() #%>% 
+          # exp()
       } 
       return(gam)
       
     }) %>% 
+    as.matrix() 
+  
+  gamma_trans <- list(gamma[,1], gamma[,2]) %>% 
+    purrr::pmap_dfr(
+      .f = function(.x,.y){
+        res <- c(.x,.y)-median(c(.x,.y))
+        return(tibble(val1 = res[1], val2 = res[2]))
+      }
+    ) %>%
     as.matrix()
   
   W <- array(dim=c(N,k))
   for(i in 1:k){
     for(j in 1:N){
-      W[j,i] <- pi_vec[i]*gamma[j,i]/((pi_vec*gamma[j,]) %>% sum())
+      #W[j,i] <- pi_vec[i]*gamma[j,i]/((pi_vec*gamma[j,]) %>% sum())
+      part_1 <- log(pi_vec[i])+gamma[j,i]
+      part_2 <- (log(pi_vec)+gamma[j,]) %>% exp() %>% sum() %>% log()
+      W[j,i] <- exp(part_1 - part_2)
     }
   }
   W[is.na(W)] <- 0
@@ -195,6 +207,9 @@ while(conv>0 & iter < maxiter){
   # }
   
   conv <- (clust_assign!=clust_assign_old) %>% sum()
+  print(clust_assign_old)
+  print(clust_assign)
+  
   
   # 
   # shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TRUE)
