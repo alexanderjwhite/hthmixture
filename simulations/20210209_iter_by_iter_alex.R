@@ -2,18 +2,18 @@ library(dplyr)
 source("./functions/20210205_sarrs_alex.R")
 set.seed(19921124)
 lam <- 1
-maxiter <- 50
-N <- 200
-prob <- c(0.5,0.5)
+maxiter <- 100
+N <- 1000
+prob <- c(0.5,0.25,0.25)
 k <- prob %>% length()
 nvld <- 1e4
-rho <- c(0,0)
+rho <- c(0,0,0)
 sigma <- 1
 p <- 50
-m <- 20
-s <- 20
-r <- c(2,2)
-b <- c(2,3)
+m <- 500
+s <- 10
+r <- c(2,2,2)
+b <- c(5,10,5)
 int <- prob %>% cumsum()
 rand_assign <- runif(N)
 if(k*s > p){print("FOR SEPARATION, VERIFY THAT K*S < P")}
@@ -99,7 +99,7 @@ clust_assign <- (init_rand_assign) %>%
   })
 
 # clust_assign <- clust_assign_true
-
+names <- paste0("c_",1:k)
 conv <- Inf
 main_clust <- Inf
 iter <- 0
@@ -166,36 +166,70 @@ while(conv>0 & iter < maxiter){
           sum() #%>% 
           # exp()
       } 
-      return(gam)
+      return(tibble(gam) %>% setNames(names[.x]))
       
-    }) %>% 
-    as.matrix() 
+    }) 
   
-  gamma_trans <- list(gamma[,1], gamma[,2]) %>% 
-    purrr::pmap_dfr(
-      .f = function(.x,.y){
-        res <- c(.x,.y)-median(c(.x,.y))
-        return(tibble(val1 = res[1], val2 = res[2]))
-      }
-    ) %>%
-    as.matrix()
+  # gamma_trans <- 1:N %>% 
+  #   purrr::map_dfr(
+  #     .f = function(.z){
+  #       obs <- gamma %>% 
+  #         slice(.z) %>%
+  #         as.matrix(dimnames = NULL) %>% 
+  #         as.numeric()
+  #       
+  #       obs[is.infinite(obs)] <- NA
+  #       obs <- obs-median(obs,na.rm=TRUE)
+  #       obs[is.na(obs)] <- -Inf
+  #       obs <- obs-max(obs)
+  #       obs <- as.matrix(obs) %>% t()
+  #       return(as_tibble(obs) %>% setNames(names))
+  #     }
+  #   ) %>% 
+  #   as.matrix()
+  # 
+  # %>% 
+  #   rowwise() %>% 
+  #   mutate(med = median(c_across(1:k), na.rm = TRUE)) %>% 
+  #   mutate(med = function(.x){median(c_across(.x))})
+  #   mutate_all(~(.x-med)) %>% 
+  #   select(-med) %>% 
+  #   as.matrix()
+  # 
+
+  # 
+  # gamma %>% 
+  #   rowwise() %>% 
+  #   mutate(med = median(c_across(1:k))) %>% 
+  #   mutate_all(~(.x-med)) %>% 
+  #   select(-med)
+  # 
+  # gamma_trans <- list(gamma[,1], gamma[,2]) %>% 
+  #   purrr::pmap_dfr(
+  #     .f = function(.x,.y){
+  #       res <- c(.x,.y)-mean(c(.x,.y))
+  #       return(tibble(val1 = res[1], val2 = res[2]))
+  #     }
+  #   ) %>%
+  #   as.matrix()
   
-  W <- array(dim=c(N,k))
-  for(i in 1:k){
-    for(j in 1:N){
-      #W[j,i] <- pi_vec[i]*gamma[j,i]/((pi_vec*gamma[j,]) %>% sum())
-      part_1 <- log(pi_vec[i])+gamma[j,i]
-      part_2 <- (log(pi_vec)+gamma[j,]) %>% exp() %>% sum() %>% log()
-      W[j,i] <- exp(part_1 - part_2)
-    }
-  }
-  W[is.na(W)] <- 0
+  # W <- array(dim=c(N,k))
+  # for(i in 1:k){
+  #   for(j in 1:N){
+  #     #W[j,i] <- pi_vec[i]*gamma[j,i]/((pi_vec*gamma[j,]) %>% sum())
+  #     part_1 <- log(pi_vec[i])+gamma_trans[j,i]
+  #     part_2 <- (log(pi_vec)+gamma_trans[j,]) %>% exp() %>% sum() %>% log()
+  #     W[j,i] <- exp(part_1 - part_2)
+  #   }
+  # }
+  # W[is.na(W)] <- 0
   
   clust_assign_old <- clust_assign
   clust_assign <- 1:N %>% 
     purrr::map_int(
       .f = function(.x){
-        res <- W[.x,] %>% which.max()
+       # res <- W[.x,] %>% which.max()
+        res <- (gamma %>% as.matrix())[.x,] %>% which.max()
         # if(is.na(res)){res <- which.max(runif(k))}
       }
     )
@@ -207,8 +241,10 @@ while(conv>0 & iter < maxiter){
   # }
   
   conv <- (clust_assign!=clust_assign_old) %>% sum()
-  print(clust_assign_old)
-  print(clust_assign)
+  #shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TRUE)
+  print((table(clust_assign_true, clust_assign)))
+  #print(clust_assign_old)
+  #print(clust_assign)
   
   
   # 
