@@ -1,0 +1,67 @@
+---
+title: "High to High Dimensional Multivariate Mixture Regression"
+author: "Alex White"
+date: "2/19/2021"
+output: beamer_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Idea
+
+Goal: Correctly cluster observations & regress in high dimensional $X$ & $Y$.
+
+* $Y_{n \times q}$
+* $X_{n \times p}$ (sparse in p)
+* $k$ clusters
+
+
+$$
+f\left(\boldsymbol{y}_{i} \mid \boldsymbol{x}_{\boldsymbol{i}} ; \boldsymbol{\theta}\right)=\Sigma_{k=1}^{K} \pi_{k} \mathcal{N}_{q}\left(\boldsymbol{y}_{\boldsymbol{i}} ; \boldsymbol{x}_{\boldsymbol{i}} A_{k}, \Sigma_{k}\right)
+$$
+
+* Parameter space $\theta=\{\pi_k,A_k,\Sigma_k;k=1\ldots K \}$ solved by EM using SARRS to compute $A_k$.
+
+## SARRS
+
+!["SARRS Main Algorithm"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/sarrs_alg.png)
+
+
+## HTH Mixture Algorithm
+
+* Initialize: $\pi_k^{(0)}=\frac{n_k^{(0)}}{n}$
+* Randomly initialize observations into k clusters
+
+While not converged ($m=1,\ldots, M$) do:
+
+* for $k=1,\ldots,K$ apply SARRS on all observations in $C_k^{(m-1)}$ to obtain $A_k^{(m)}$, $\Sigma_k^{(m)}$
+* compute $\mu_{ik}^{(m)} = \mathcal{N}_{p}\left(\boldsymbol{y}_{\boldsymbol{i}} ; A_{k}^{(m)} \boldsymbol{x}_{\boldsymbol{i}}, \Sigma_{k}^{(m)}\right)$
+* $C_k^{(m)}=\{i|\text{ML component k} \}$
+* $\pi_k^{(m)}=\frac{n_k^{(m)}}{n}$
+
+## Data Simulation
+
+* $X_k$ consists of iid random vectors sample from $MVN(\mathbf{0},\Sigma_k)$ 
+* $\Sigma_k$ independent
+* Noise matrix $Z_k \in \mathbb{R}^{n \times q}$ has iid $N(0,\sigma^2)$ entries
+* $A_k=\left(\begin{array}{c}b_k B_{0_k} B_{1_k} \\0\end{array}\right)$
+  - with $b>0$, $B_0 \in \mathbb{R}^{s \times r}$, $B_1 \in \mathbb{R}^{r \times q}$
+* $Y_k = X_kA_k+Z_k$
+
+Finally, combine $X$ & $Y$
+
+## Performance
+
+* In simulated data, current algorithm clusters well (perfectly in many cases):
+  - p < N
+  - sufficiently large N ($>100$)
+  - Non overlapping nonzero rows of $A_k$ with $s<<p$
+  - Large q ($>5000$)
+  
+* Challenges:
+  - Large $p$, $p>N$
+  - Non independent covariance structure
+  
+

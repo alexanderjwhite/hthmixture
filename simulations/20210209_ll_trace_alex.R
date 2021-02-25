@@ -1,21 +1,23 @@
 library(dplyr)
+library(ggplot2)
 source("./functions/20210205_sarrs_alex.R")
-set.seed(19921124)
+# set.seed(19921124)
 lam <- 1
 maxiter <- 100
-N <- 500
+N <- 50
 prob <- c(0.5,0.5)
 k <- prob %>% length()
 nvld <- 1e4
 rho <- c(0,0)
 sigma <- 1
-p <- 500
-m <- 500
-s <- 3
-r <- c(2,2)
-b <- c(5,10e4)
+p <- 50
+m <- 20
+s <- 5
+r <- c(1,1)
+b <- c(5,10)
 int <- prob %>% cumsum()
 rand_assign <- runif(N)
+names <- paste0("c_",1:k)
 if(k*s > p){print("FOR SEPARATION, VERIFY THAT K*S < P")}
 
 # make sure k*s is less than p
@@ -44,6 +46,12 @@ n <- clust_assign_true %>%
   summarize(n = n()) %>% 
   pull(n)
 
+gamma_store <- as_tibble(matrix(rep(0,k),nrow=1)) %>% 
+  rename_if(is.numeric,~names) %>% 
+  mutate(w_ll = 0, iter = 0)
+  
+
+  
 # clust_assign_true <- c(rep(1,39),rep(2,52), rep(3,109))
 clust_iter <<- 1
 clust_min <<- 1
@@ -99,7 +107,7 @@ clust_assign <- (init_rand_assign) %>%
   })
 
 # clust_assign <- clust_assign_true
-names <- paste0("c_",1:k)
+
 conv <- Inf
 main_clust <- Inf
 iter <- 0
@@ -137,7 +145,7 @@ while(conv>0 & iter < maxiter){
       # P=X%*% ginv(t(X)%*%X) %*%t(X)
       # rhat = sum(svd(P%*%Y)$d > sigmahat*(sqrt(2*m)+sqrt(2*min(n,p))))
       
-      rhat <- 2
+      rhat <- r[.x]
       estimate <- SARRS(Y_k,X_k,rhat, lam, "grLasso")
       
       A_k <- estimate %>% 
@@ -166,9 +174,18 @@ while(conv>0 & iter < maxiter){
           sum() #%>% 
           # exp()
       } 
+      # gam[is.infinite(gam)] <- min(gam[is.finite(gam)], na.rm = TRUE)
       return(tibble(gam) %>% setNames(names[.x]))
       
     }) 
+  
+  weighted_ll <- (gamma*pi_vec) %>% 
+    tibble() %>% 
+    mutate(total = rowSums(across(where(is.numeric)))) %>% 
+    pull(total)
+  
+  gamma_store <- gamma_store %>% 
+    bind_rows(tibble(gamma, w_ll = weighted_ll, iter = iter))
   
   # gamma_trans <- 1:N %>% 
   #   purrr::map_dfr(
@@ -261,3 +278,17 @@ while(conv>0 & iter < maxiter){
 shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TRUE)
 (table(clust_assign_true, clust_assign)[,shuffle])
 
+gamma_store %>% 
+  filter(iter > 0) %>% 
+  group_by(iter) %>% 
+  summarize_all(~sum(.)) %>% 
+  tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>% 
+  ggplot() +
+  geom_path(aes(x = iter, y = value, colour = cluster))  
+
+gamma_store %>% 
+  filter(iter > 0) %>% 
+  group_by(iter) %>% 
+  summarize_all(~sum(.)) %>% 
+  ggplot() +
+  geom_path(aes(x = iter, y = w_ll)) 
