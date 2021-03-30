@@ -4,7 +4,7 @@ source("./functions/20210205_sarrs_alex.R")
 # set.seed(19921124)
 lam <- 1
 maxiter <- 100
-N <- 50
+N <- 100
 prob <- c(0.5,0.5)
 k <- prob %>% length()
 nvld <- 1e4
@@ -278,17 +278,21 @@ while(conv>0 & iter < maxiter){
 shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TRUE)
 (table(clust_assign_true, clust_assign)[,shuffle])
 
-gamma_store %>% 
+p1 <- gamma_store %>% 
   filter(iter > 0) %>% 
   group_by(iter) %>% 
   summarize_all(~sum(.)) %>% 
   tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>% 
   ggplot() +
-  geom_path(aes(x = iter, y = value, colour = cluster))  
+  geom_path(aes(x = iter, y = value, colour = cluster))
+# plotly::ggplotly(p1)
+p1
 
-gamma_store %>% 
+p2 <- gamma_store %>% 
   filter(iter > 0) %>% 
   group_by(iter) %>% 
   summarize_all(~sum(.)) %>% 
   ggplot() +
   geom_path(aes(x = iter, y = w_ll)) 
+# plotly::ggplotly(p2)
+p2

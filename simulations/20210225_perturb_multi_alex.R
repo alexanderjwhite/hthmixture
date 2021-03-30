@@ -3,17 +3,17 @@ library(ggplot2)
 source("./functions/20210205_sarrs_alex.R")
 # set.seed(19921124)
 num_pert <- 40
-chains <- 500
+chains <- 250
 lam <- 1
 maxiter <- 100
-N <- 100
+N <- 500
 prob <- c(0.5,0.5)
 k <- prob %>% length()
 nvld <- 1e4
 rho <- c(0,0)
 sigma <- 1
-p <- 200
-m <- 200
+p <- 20
+m <- 20
 s <- 5
 r <- c(1,1)
 b <- c(5,10)
@@ -235,6 +235,12 @@ clust_assign <- chain_clust %>%
 
 shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TRUE)
 (table(clust_assign_true, clust_assign)[,shuffle])
+
+chain_clust %>% 
+  select(chain, llik) %>% 
+  unique() %>% 
+  ggplot() + 
+  geom_path(aes(x=chain,y=llik))
 
 # gamma_store %>% 
 #   filter(iter > 0) %>% 

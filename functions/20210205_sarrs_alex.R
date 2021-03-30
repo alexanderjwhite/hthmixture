@@ -12,15 +12,7 @@ sim_sarrs <-function(n,nvld,ntst,a_rows, p, m, r, rho,sigma,b){
   X <- MASS::mvrnorm(n,rep(0,p),Sigma)	
   E <- matrix(rnorm(n*m, sd = sigma),n,m)
   Y <- X%*%A + E
-  # 
-  # Xvld <- MASS::mvrnorm(nvld,rep(0,p),Sigma)	
-  # Evld <- matrix(rnorm(nvld*m),nvld,m)
-  # Yvld <- Xvld%*%A + Evld
-  # 
-  # Xtst <- MASS::mvrnorm(ntst,rep(0,p),Sigma)	
-  # Etst <- matrix(rnorm(ntst*m),ntst,m)
-  # Ytst <- Xtst%*%A + Etst
-  # 
+
   return(list(Y=Y,X=X,A=A,r=r,sig=Sigma,E=E))
 }
 

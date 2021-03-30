@@ -2,7 +2,7 @@ library(dplyr)
 library(ggplot2)
 source("./functions/20210205_sarrs_alex.R")
 # set.seed(19921124)
-num_pert <- 40
+num_pert <- 60
 lam <- 1
 maxiter <- 100
 N <- 100
