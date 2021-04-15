@@ -1,0 +1,24 @@
+\frametitle{Results}
+\protect\hypertarget{results-4}{}
+\begin{itemize}
+\tightlist
+\item
+  Hello?
+\end{itemize}
+
+\begin{verbatim}
+## # A tibble: 24 x 5
+##        N     s     R hthmix kmeans
+##    <dbl> <dbl> <int>  <dbl>  <dbl>
+##  1    50     5     1  0.9    0.7
+##  2   100     5     1  1      0.66
+##  3   200     5     1  1      0.51
+##  4   400     5     1  1      0.535
+##  5    50    10     1  0.84   0.62
+##  6   100    10     1  0.92   0.5
+##  7   200    10     1  1      0.655
+##  8   400    10     1  0.998  0.52
+##  9    50    20     1  0.8    0.72
+## 10   100    20     1  0.8    0.53
+## # ... with 14 more rows
+\end{verbatim}

@@ -280,6 +280,7 @@ shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TR
 
 p1 <- gamma_store %>% 
   filter(iter > 0) %>% 
+  mutate_at(.vars = vars(tidyselect::starts_with("c_"), w_ll), .funs = ~-(.)) %>% 
   group_by(iter) %>% 
   summarize_all(~sum(.)) %>% 
   tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>% 
@@ -290,6 +291,7 @@ p1
 
 p2 <- gamma_store %>% 
   filter(iter > 0) %>% 
+  mutate_at(.vars = vars(tidyselect::starts_with("c_"), w_ll), .funs = ~-(.)) %>% 
   group_by(iter) %>% 
   summarize_all(~sum(.)) %>% 
   ggplot() +

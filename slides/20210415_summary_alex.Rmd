@@ -1,7 +1,7 @@
 ---
 title: "High to High Dimensional Multivariate Mixture Regression"
 author: "Alex White"
-date: "4/02/2021"
+date: "4/16/2021"
 output: beamer_presentation
 editor_options: 
   chunk_output_type: console
@@ -29,6 +29,9 @@ $$
 * Parameter space $\theta=\{\pi_k,A_k,\Sigma_k;k=1\ldots K \}$ solved by general EM using SARRS to compute $A_k$.
 
 ## SARRS
+
+* Excellent performance, even in high dimension ($>5000$)
+* Computationally very fast
 
 !["SARRS Main Algorithm"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/sarrs_alg.png)
 
@@ -71,6 +74,19 @@ While not converged ($m=1,\ldots, M$) do:
 
 Finally, combine $X$ & $Y$
 
+## Simulation
+
+* N: $50 - 400$
+* s: $5 - 20$
+* rank: $1 - 2$
+* B: $1$
+* $p=m=1000$
+* Perturb: $20\%$
+* Cluster with equal probability
+* K: $2$
+* $\sigma$: $1$
+* CHains: 500
+
 ## Results
 
 * HTH algorithm consistently reaches local maximum
@@ -95,8 +111,25 @@ Finally, combine $X$ & $Y$
 
 ## Results
 
-* Hello?
 
+```{r, echo=FALSE, fig.align="center"}
+data <- readr::read_rds("G:/My Drive/Dissertation/HTH Mixture/hthmixture/results/20210415_slide_results.rds")
+
+
+data %>% 
+  slice(1:12) %>% 
+  knitr::kable(format = "latex", digits = 2)
+```
+
+## Results
+
+
+```{r, echo=FALSE, fig.align="center"}
+
+data %>% 
+  slice(13:24) %>% 
+  knitr::kable(format = "latex", digits = 2)
+```
 
 
 

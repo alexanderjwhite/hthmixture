@@ -2,11 +2,11 @@ library(dplyr)
 library(ggplot2)
 source("./functions/20210205_sarrs_alex.R")
 set.seed(19921124)
-num_pert <- 10
-chains <- 1
+num_pert <- 20
+chains <- 100
 lam <- 1
 maxiter <- 100
-N <- 50
+N <- 100
 k <- 2
 prob <- rep(1/k,k)
 nvld <- 1e4
@@ -257,8 +257,8 @@ chain_clust <- 1:chains %>%
       #weighted_ll[is.infinite(weighted_ll)] <- -.Machine$double.xmin
 
       
-      # gamma_store <- gamma_store %>% 
-      #   bind_rows(tibble(gamma, w_ll = weighted_ll, iter = iter))
+      gamma_store <- gamma_store %>%
+        bind_rows(tibble(gamma, w_ll = weighted_ll, iter = iter))
       
       
       clust_assign_old <- clust_assign
@@ -320,17 +320,17 @@ chain_clust %>%
   ggplot() + 
   geom_path(aes(x=chain,y=llik))
 
-# gamma_store %>% 
-#   filter(iter > 0) %>% 
-#   group_by(iter) %>% 
-#   summarize_all(~sum(.)) %>% 
-#   tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>% 
-#   ggplot() +
-#   geom_path(aes(x = iter, y = value, colour = cluster))  
-# 
-# gamma_store %>% 
-#   filter(iter > 0) %>% 
-#   group_by(iter) %>% 
-#   summarize_all(~sum(.)) %>% 
-#   ggplot() +
-#   geom_path(aes(x = iter, y = w_ll)) 
+gamma_store %>%
+  filter(iter > 0) %>%
+  group_by(iter) %>%
+  summarize_all(~sum(.)) %>%
+  tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>%
+  ggplot() +
+  geom_path(aes(x = iter, y = value, colour = cluster))
+
+gamma_store %>%
+  filter(iter > 0) %>%
+  group_by(iter) %>%
+  summarize_all(~sum(.)) %>%
+  ggplot() +
+  geom_path(aes(x = iter, y = w_ll))

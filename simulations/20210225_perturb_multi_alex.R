@@ -2,18 +2,18 @@ library(dplyr)
 library(ggplot2)
 source("./functions/20210205_sarrs_alex.R")
 # set.seed(19921124)
-num_pert <- 40
-chains <- 250
+num_pert <- 20
+chains <- 1
 lam <- 1
 maxiter <- 100
-N <- 500
+N <- 100
 prob <- c(0.5,0.5)
 k <- prob %>% length()
 nvld <- 1e4
 rho <- c(0,0)
 sigma <- 1
-p <- 20
-m <- 20
+p <- 200
+m <- 200
 s <- 5
 r <- c(1,1)
 b <- c(5,10)
@@ -48,7 +48,7 @@ n <- clust_assign_true %>%
   summarize(n = n()) %>% 
   pull(n)
 
-gamma_store <- as_tibble(matrix(rep(0,k),nrow=1)) %>% 
+gamma_store <<- as_tibble(matrix(rep(0,k),nrow=1)) %>% 
   rename_if(is.numeric,~names) %>% 
   mutate(w_ll = 0, iter = 0)
   
@@ -198,8 +198,8 @@ chain_clust <- 1:chains %>%
       
       weighted_ll[is.infinite(weighted_ll)] <- min(weighted_ll[is.finite(weighted_ll)])
       
-      # gamma_store <- gamma_store %>% 
-      #   bind_rows(tibble(gamma, w_ll = weighted_ll, iter = iter))
+      gamma_store <<- gamma_store %>%
+        bind_rows(tibble(gamma, w_ll = weighted_ll, iter = iter))
       
       
       clust_assign_old <- clust_assign
@@ -238,21 +238,23 @@ shuffle <- clue::solve_LSAP(table(clust_assign_true, clust_assign), maximum = TR
 
 chain_clust %>% 
   select(chain, llik) %>% 
+  # mutate(llik = -llik) %>% 
   unique() %>% 
   ggplot() + 
-  geom_path(aes(x=chain,y=llik))
+  geom_path(aes(x=chain,y=llik)) +
+  theme(axis.text.y = element_blank())
 
-# gamma_store %>% 
-#   filter(iter > 0) %>% 
-#   group_by(iter) %>% 
-#   summarize_all(~sum(.)) %>% 
-#   tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>% 
-#   ggplot() +
-#   geom_path(aes(x = iter, y = value, colour = cluster))  
-# 
-# gamma_store %>% 
-#   filter(iter > 0) %>% 
-#   group_by(iter) %>% 
-#   summarize_all(~sum(.)) %>% 
-#   ggplot() +
-#   geom_path(aes(x = iter, y = w_ll)) 
+gamma_store %>%
+  filter(iter > 0) %>%
+  group_by(iter) %>%
+  summarize_all(~sum(.)) %>%
+  tidyr::pivot_longer(cols = tidyselect::starts_with("c"), names_to = "cluster") %>%
+  ggplot() +
+  geom_path(aes(x = iter, y = w_ll, colour = cluster))
+
+gamma_store %>%
+  filter(iter > 0) %>%
+  group_by(iter) %>%
+  summarize_all(~sum(.)) %>%
+  ggplot() +
+  geom_path(aes(x = iter, y = w_ll))
