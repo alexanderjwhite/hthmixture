@@ -1,7 +1,7 @@
 ---
 title: "High to High Dimensional Multivariate Mixture Regression"
 author: "Alex White"
-date: "4/16/2021"
+date: "4/27/2021"
 output: beamer_presentation
 editor_options: 
   chunk_output_type: console
@@ -12,6 +12,20 @@ library(dplyr)
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+## Motivation
+
+Understanding how DNA methylation affects/predicts gene expression in heterogeneous patient populations. 
+
+Suppose for some patient population we have:
+
+* DNA methylation levels for some set of CpG sites
+* Gene expression levels for some clinically relevant sites.
+
+We are interested in:
+
+1. Clustering patients into the correct sub-group
+2. Within sub-group, finding relationship between CpG site & gene expression
+
 ## Idea
 
 Goal: Correctly cluster observations & regress in high dimensional $X$ & $Y$.
@@ -20,6 +34,8 @@ Goal: Correctly cluster observations & regress in high dimensional $X$ & $Y$.
 * $X_{n \times p}$ Design matrix
 * $A_{p \times q}$ Coefficient matrix (sparse in p)
 * $k$ clusters
+* Assume (for now) response covariance ($\Sigma_k$) is diagonal
+  - Strong yet common assumption due to lack of degrees of freedom for correct variance specification
 
 
 $$
@@ -28,12 +44,25 @@ $$
 
 * Parameter space $\theta=\{\pi_k,A_k,\Sigma_k;k=1\ldots K \}$ solved by general EM using SARRS to compute $A_k$.
 
-## SARRS
+## Multivariate Regression
 
-* Excellent performance, even in high dimension ($>5000$)
-* Computationally very fast
+* Used when there are multiple response variables
 
-!["SARRS Main Algorithm"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/sarrs_alg.png)
+!["Multivariate Regression"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/mvr.png)
+
+## Mixed Regression
+
+* Used when there are multiple response variables
+
+!["Mixed Regression"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/mvr_mix.png)
+
+## Reduced Rank Regression
+
+* Coefficient matrix sparse in q dimension
+* Only few genes are associated with methylation
+
+!["Reduced Rank Regression"](G:/My Drive/Dissertation/HTH Mixture/hthmixture/slides/mvr_rr.png)
+
 
 
 ## HTH Mixture Algorithm
@@ -140,5 +169,6 @@ data %>%
 * Challenges:
   - Likelihood space is explored inefficiently, sometimes requires large number of chains
   - Computationally cumbersome/inefficient
+  
   
 
