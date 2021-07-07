@@ -1,4 +1,4 @@
-simulate_hthmix <- function(params){
+simulate_hthmix <- function(params, boltz = FALSE){
   require(dplyr)
   num_pert <- params %>% purrr::pluck("num_pert")
   chains <- params %>% purrr::pluck("chains")
@@ -16,6 +16,7 @@ simulate_hthmix <- function(params){
   r <- params %>% purrr::pluck("r")
   b <- params %>% purrr::pluck("b")
   
+  perc_pert <- NULL
   num_pert <- (num_pert*N) %>% floor()
   int <- prob %>% cumsum()
   rand_assign <- runif(N)
@@ -109,37 +110,68 @@ simulate_hthmix <- function(params){
   change <- 0
   weighted_g_ll_min <<- 0
   clust_assign_g <<- clust_assign
+  
+  lik_store <- NULL
   chain_clust <- 1:chains %>% 
     purrr::map_dfr(
       .f = function(.c){
         
-        if(abs(.c - change) > 20){
-          init_int <- rep(1/k,k) %>% cumsum()
-          init_rand_assign <- runif(N)
+        # Test out Boltzmann pert
+        # print(lik_store)
+        if(boltz){
           
-          clust_assign <<- (init_rand_assign) %>%
-            purrr::map_int(.f = function(.x){
-              clust <- (.x <= init_int) %>%
-                which() %>%
-                min()
-              return(clust)
-            })
-          clust_assign_g <<- clust_assign
+          perc_pert <- boltzmann_pert(lik_store)
+          # print(num_pert)
+          num_pert <- (perc_pert*N) %>% floor()
+          # print(num_pert)
+          pert_samples <- sample(1:N, num_pert)
+          if(num_pert!=0){
+            unique_vals <- 1:k
+            for(i in 1:length(pert_samples)){
+              obs <- pert_samples[i]
+              orig <- clust_assign_g[obs]
+              vals <- unique_vals[unique_vals != orig]
+              if(length(vals) == 1){
+                clust_assign_g[obs] <- vals
+              } else {
+                clust_assign_g[obs] <- sample(vals)
+              }
+            }
+          }
+          # print(pert_samples)
+          
           
         } else {
-          pert_samples <- sample(1:N, num_pert)
-          unique_vals <- 1:k
-          for(i in 1:length(pert_samples)){
-            obs <- pert_samples[i]
-            orig <- clust_assign_g[obs]
-            vals <- unique_vals[unique_vals != orig]
-            if(length(vals) == 1){
-              clust_assign_g[obs] <- vals
-            } else {
-              clust_assign_g[obs] <- sample(vals)
+          if(abs(.c - change) > 20){
+            init_int <- rep(1/k,k) %>% cumsum()
+            init_rand_assign <- runif(N)
+            
+            clust_assign <<- (init_rand_assign) %>%
+              purrr::map_int(.f = function(.x){
+                clust <- (.x <= init_int) %>%
+                  which() %>%
+                  min()
+                return(clust)
+              })
+            clust_assign_g <<- clust_assign
+            
+          } else {
+            pert_samples <- sample(1:N, num_pert)
+            unique_vals <- 1:k
+            for(i in 1:length(pert_samples)){
+              obs <- pert_samples[i]
+              orig <- clust_assign_g[obs]
+              vals <- unique_vals[unique_vals != orig]
+              if(length(vals) == 1){
+                clust_assign_g[obs] <- vals
+              } else {
+                clust_assign_g[obs] <- sample(vals)
+              }
             }
           }
         }
+        
+        
         
         
         
@@ -224,13 +256,12 @@ simulate_hthmix <- function(params){
               }
             )
           
-          
-          
           conv <- (clust_assign!=clust_assign_old) %>% sum()
           
         }
         
         weighted_g_ll <<- weighted_ll %>% sum()
+        lik_store <<- c(lik_store, weighted_g_ll)
         
         if(weighted_g_ll > weighted_g_ll_min){
           weighted_g_ll_min <<- weighted_g_ll
@@ -244,6 +275,7 @@ simulate_hthmix <- function(params){
         
         acctbl <- (table(clust_assign_true, clust_assign)[,shuffle])
         acc <- (acctbl %>% diag() %>% sum()) / N
+        print(paste("Chain:",.c,"Pert:",perc_pert,"Acc:",acc))
         return(tibble(llik = weighted_g_ll, chain = .c, acc = acc))
       }
     )
