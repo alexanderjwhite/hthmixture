@@ -45,7 +45,7 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
       
       
       
-      if(is.null(lam)|is.null(rank)){
+      if((is.null(lam)|is.null(rank)) & nrow(X_k) > 1){
         
         # Cross Validate to select penalization
         
@@ -90,6 +90,7 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         model_k <- list(grid_search$lam, grid_search$r) %>% 
           purrr::pmap_dfr(.f = function(.l, .r){
             lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
+            lam_0 <- 1
             lam <- .l*lam_0
             model <- fct_sarrs(y_train,x_train,.r, lam, "grLasso")
             error <- mean((y_test-(cbind(x_test,1) %*% model$Ahat))^2)
@@ -101,6 +102,11 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
           dplyr::pull(model) %>% 
           purrr::pluck(1)
 
+      } else if (nrow(X_k) <= 1){
+        
+        # model_k <- fct_sarrs(Y_k, X_k, 1, 1, "grLasso")
+        return(dplyr::tibble(-Inf) %>% stats::setNames(names[.x]))
+        
       } else {
         
         model_k <- fct_sarrs(Y_k, X_k, rank, lam, "grLasso")

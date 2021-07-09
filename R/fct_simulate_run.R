@@ -1,6 +1,6 @@
 #' Simulate and run mixrrr
 #'
-#' @param param list of parameters for simulation
+#' @param params list of parameters for simulation
 #'
 #' @return list of results
 #' @export
@@ -10,7 +10,7 @@
 #' @import stats
 #'
 #' @examples 
-fct_simulate_run <- function(param){
+fct_simulate_run <- function(params){
   
   maxiter <- params %>% purrr::pluck("maxiter")
   N <- params %>% purrr::pluck("N")
@@ -68,6 +68,7 @@ fct_simulate_run <- function(param){
   }
   x <- x[clust_assign_true_vec,]
   y <- y[clust_assign_true_vec,]
+
   
   model <- hthmix(x, y, chains = 1, maxiter = maxiter)
   

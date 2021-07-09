@@ -4,10 +4,10 @@
 \alias{fct_simulate_run}
 \title{Simulate and run mixrrr}
 \usage{
-fct_simulate_run(param)
+fct_simulate_run(params)
 }
 \arguments{
-\item{param}{list of parameters for simulation}
+\item{params}{list of parameters for simulation}
 }
 \value{
 list of results
