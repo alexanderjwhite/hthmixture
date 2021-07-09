@@ -13,7 +13,7 @@ fct_weighted_ll <- function(gamma){
   
   llik <- gamma %>% 
     dplyr::rowwise() %>% 
-    dplyr::mutate(ll = max(c_across(tidyselect:::where(is.numeric)))) 
+    dplyr::mutate(ll = max(c_across(where(is.numeric)))) 
   
   llik <- llik %>% 
     dplyr::mutate(ll = ifelse(is.infinite(ll), min((llik %>% pull(ll))[is.finite((llik %>% pull(ll)))]), ll)) %>% 

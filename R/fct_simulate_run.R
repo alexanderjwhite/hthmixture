@@ -9,7 +9,7 @@
 #' @import dplyr
 #' @import stats
 #'
-#' @examples
+#' @examples 
 fct_simulate_run <- function(param){
   
   maxiter <- params %>% purrr::pluck("maxiter")
@@ -51,46 +51,23 @@ fct_simulate_run <- function(param){
     dplyr::summarize(n = dplyr::n()) %>% 
     dplyr::pull(n)
   
-  clust_iter <<- 1
-  clust_min <<- 1
-  clust_max <<- s
-  data_k <- n %>% 
-    list(r,rho,b) %>% 
-    purrr::pmap(.f = function(.n,.r,.rho,.b){
-      a_rows <- clust_min:clust_max
-      clust_iter <<- clust_iter + 1
-      clust_min <<- clust_max+1
-      clust_max <<- clust_iter*s
-      
-      sim <- fct_sim_mixrrr(.n,a_rows,p,m,.r,.rho,sigma,.b)
-      A <- sim %>% 
-        purrr::pluck("A")
-      S <- sim %>% 
-        purrr::pluck("sig")
-      X <- sim %>% 
-        purrr::pluck("X")
-      Y <- sim %>% 
-        purrr::pluck("Y")
-      return(list(X=X,Y=Y,A=A,S=S))
-    })
-  
-  x <- data_k %>% 
-    purrr::map_dfr(.f = function(.x){
-      X <- .x %>% 
-        purrr::pluck("X")
-      return(as_tibble(X))
-    }) %>% 
-    dplyr::slice(clust_assign_true_vec) %>% 
-    as.matrix()
-  
-  y <- data_k %>% 
-    purrr::map_dfr(.f = function(.x){
-      Y <- .x %>% 
-        purrr::pluck("Y")
-      return(as_tibble(Y))
-    }) %>% 
-    dplyr::slice(clust_assign_true_vec) %>% 
-    as.matrix()
+  clust_iter <- 1
+  clust_min <- 1
+  clust_max <- s
+  x <- NULL
+  y <- NULL
+  for(i in 1:k){
+    a_rows <- clust_min:clust_max
+    clust_iter <- clust_iter + 1
+    clust_min <- clust_max+1
+    clust_max <- clust_iter*s
+    
+    sim <- fct_sim_mixrrr(n[i],a_rows,p,m,r[i],rho[i],sigma,b[i])
+    x <- x %>% rbind(sim$X)
+    y <- y %>% rbind(sim$Y)
+  }
+  x <- x[clust_assign_true_vec,]
+  y <- y[clust_assign_true_vec,]
   
   model <- hthmix(x, y, chains = 1, maxiter = maxiter)
   
