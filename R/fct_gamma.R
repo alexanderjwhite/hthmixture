@@ -90,7 +90,7 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         model_k <- list(grid_search$lam, grid_search$r) %>% 
           purrr::pmap_dfr(.f = function(.l, .r){
             lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
-            lam_0 <- 1
+            # lam_0 <- 1
             lam <- .l*lam_0
             model <- fct_sarrs(y_train,x_train,.r, lam, "grLasso")
             error <- mean((y_test-(cbind(x_test,1) %*% model$Ahat))^2)

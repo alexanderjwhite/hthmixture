@@ -29,7 +29,8 @@ hthmix <- function(x, y, k_min = 2, k_max = 8, lam = NULL, rank = NULL, chains =
   
   # Substitute
   k <- k_min
-
+  
+  N <- x %>% nrow()
   clust_assign <- fct_initialize(k, N)
   
   result <- 1:chains %>% 
