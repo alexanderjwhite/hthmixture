@@ -7,8 +7,7 @@
 hthmix(
   x,
   y,
-  k_min = 2,
-  k_max = 8,
+  k,
   lam = NULL,
   rank = NULL,
   chains = 50,
@@ -23,9 +22,7 @@ hthmix(
 
 \item{y}{matrix}
 
-\item{k_min}{minimum k to search}
-
-\item{k_max}{maximum k to search}
+\item{k}{number of clusters}
 
 \item{lam}{penalization parameter}
 

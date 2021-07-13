@@ -23,9 +23,9 @@
 fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search){
   
   names <- paste0("c_",1:k)
-  1:k %>% 
+  gamma_calc <- 1:k %>% 
     list() %>% 
-    purrr::pmap_dfc(.f = function(.x){
+    purrr::pmap(.f = function(.x){
       
       cluster_rows <- (clust_assign==.x) %>% 
         which()
@@ -34,24 +34,24 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         length()
       
       X_k <- x %>% 
-        dplyr::as_tibble() %>% 
+        dplyr::as_tibble(.name_repair = "universal") %>% 
         dplyr::slice(cluster_rows) %>% 
         as.matrix()
       
       Y_k <- y %>% 
-        dplyr::as_tibble() %>% 
+        dplyr::as_tibble(.name_repair = "universal") %>% 
         dplyr::slice(cluster_rows) %>% 
         as.matrix()
       
       
       
-      if((is.null(lam)|is.null(rank)) & nrow(X_k) > 1){
+      if((is.null(lam)|is.null(rank)) & nrow(X_k) > 3){
         
         # Cross Validate to select penalization
         
         val_rows <- cluster_rows %>% 
           dplyr::tibble() %>% 
-          dplyr::slice_sample(prop = val_frac) %>% 
+          dplyr::slice_sample(prop = ifelse((val_frac*nrow(X_k)) < 1, 0.5, 1)) %>% 
           dplyr::pull()
         
         train_rows <- cluster_rows %>% 
@@ -59,7 +59,7 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
           dplyr::filter(!((.) %in% val_rows)) %>% 
           dplyr::pull()
         
-        split_data <- fct_data_split(X_k, Y_k, val_frac)
+        split_data <- fct_data_split(X_k, Y_k, ifelse((val_frac*nrow(X_k)) < 1, 0.5, val_frac))
         
         x_train <- split_data %>% 
           purrr::pluck("x_train")
@@ -102,6 +102,14 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
           dplyr::pull(model) %>% 
           purrr::pluck(1)
         
+      } else if (nrow(X_k) > 1){
+        rank_var <- fct_rank_var(x, y, n_k, p, m)
+        sigmahat <- rank_var %>% 
+          purrr::pluck("sigmahat")
+        lam_0 <- fct_lam_coef(x, sigmahat, m, p)
+        model_k <- fct_sarrs(Y_k, X_k, rank, lam_0, "grLasso")
+        
+        
       } else if (nrow(X_k) <= 1){
         
         # model_k <- fct_sarrs(Y_k, X_k, 1, 1, "grLasso")
@@ -126,8 +134,12 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
       
       
       gam <- fct_log_lik(mu_mat, sig_vec, y, N, m)
-      return(dplyr::tibble(gam) %>% stats::setNames(names[.x]))
+      return(list(gamma = dplyr::tibble(gam) %>% stats::setNames(names[.x]), A_k = A_k))
       
     })
-  
+  gamma <- gamma_calc %>% 
+    purrr::map_dfc(.f = function(.x){.x %>% purrr::pluck("gamma")})
+  A <- gamma_calc %>% 
+    purrr::map(.f = function(.x){.x %>% purrr::pluck("A_k")})
+  return(list(gamma = gamma, A = A))
 }

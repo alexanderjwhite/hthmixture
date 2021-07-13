@@ -34,8 +34,11 @@ fct_hthmix_comp <- function(x, y, k, maxiter, lam, rank, clust_assign, val_frac,
     
     pi_vec <- fct_pi_vec(clust_assign, k, N)
     
-    gamma <- fct_gamma(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search)
-    
+    gamma_model <- fct_gamma(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search)
+    gamma <- gamma_model %>% 
+      purrr::pluck("gamma")
+    A <- gamma_model %>% 
+      purrr::pluck("A")
     weighted_ll <- fct_weighted_ll(gamma)
     ll_store <- ll_store %>% bind_rows(tibble(iter = iter, ll = weighted_ll))
     clust_assign_old <- clust_assign
@@ -45,5 +48,5 @@ fct_hthmix_comp <- function(x, y, k, maxiter, lam, rank, clust_assign, val_frac,
     # print(paste("iter", iter,"::: conv", conv,"::: lik",round(weighted_ll,digits = 2)))
     
   }
-  return(list(ll = weighted_ll, assign = clust_assign, assign_store = clust_store, ll_store = ll_store, iter = iter))
+  return(list(ll = weighted_ll, assign = clust_assign, A = A, assign_store = clust_store, ll_store = ll_store, iter = iter))
 }
