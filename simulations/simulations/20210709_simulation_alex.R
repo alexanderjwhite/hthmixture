@@ -1,3 +1,6 @@
+paths <- .libPaths()
+paths <- c("/geode2/home/u100/whitealj/BigRed3/r_4_0_4_library/",paths)
+.libPaths(paths)
 library(dplyr)
 library(hthmixture)
 N <- c(100,200)
@@ -8,11 +11,13 @@ s <- c(10,20)
 r <- 1:2
 rep <- 1:10
 
-future::plan("multiprocess")
-grid <- (expand.grid(N=N,k=k,sigma=sigma,dim=dim,s=s,r=r,rep=rep))[1:2,]
+# future::plan("multicore")
+grid <- (expand.grid(N=N,k=k,sigma=sigma,dim=dim,s=s,r=r,rep=rep))[1,]
 
 result <- list(grid$N, grid$k, grid$sigma, grid$dim, grid$s, grid$r, grid$rep,1:nrow(grid)) %>% 
-  furrr::future_pmap(.f = function(.N, .k, .sigma, .dim, .s, .r, .rep, .prog){
+  # furrr::future_pmap(options = future_options(seed = 19921124),
+  #   .f = function(.N, .k, .sigma, .dim, .s, .r, .rep, .prog){
+  purrr::pmap(.f = function(.N, .k, .sigma, .dim, .s, .r, .rep, .prog){
     params <- list(
       maxiter = 1e3,
       N = .N,
@@ -24,8 +29,10 @@ result <- list(grid$N, grid$k, grid$sigma, grid$dim, grid$s, grid$r, grid$rep,1:
       s = .s,
       r = rep(.r,.k),
       b = (1:.k)*5)
-    fct_simulate_run(params)
-    fct_push_me(round(.prog/nrow(grid), digits = 2))
+    if((.prog %% 100) == 0){
+      fct_push_me(round(.prog/nrow(grid), digits = 2))
+    }
+    return(list(N = .N, k = .k, sigma = .sigma, dim = .dim, s = .s, r = .r, rep = .rep, id = .prog, res = fct_simulate_run(params)))
   })
 
 result %>% saveRDS("20210709_results.rds")

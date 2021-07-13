@@ -78,7 +78,7 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         n_test <- split_data %>% 
           purrr::pluck("n_test")
         
-        rank_var_test <- fct_rank_var(x_train, y_train, n_test, p, m)
+        rank_var_test <- fct_rank_var(x_train, y_train, n_train, p, m)
         rank_search <- 1
 
         sigmahat_test <- rank_var_test %>% 
@@ -88,7 +88,8 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         grid_search <- expand.grid(lam = penal_search, r = rank_search)
         model_k <- list(grid_search$lam, grid_search$r) %>% 
           purrr::pmap_dfr(.f = function(.l, .r){
-            lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
+            # lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
+            lam_0 <- fct_lam_coef(x_train, sigmahat_test, m, p)
             lam <- .l*lam_0
             model <- fct_sarrs(y_train,x_train,.r, lam, "grLasso")
             error <- mean((y_test-(cbind(x_test,1) %*% model$Ahat))^2)

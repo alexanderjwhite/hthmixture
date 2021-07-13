@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_rank_var.R
 \name{fct_rank_var}
 \alias{fct_rank_var}
-\title{Title}
+\title{Estimate noise variance}
 \usage{
 fct_rank_var(X_k, Y_k, n_k, p, m)
 }
@@ -21,5 +21,5 @@ fct_rank_var(X_k, Y_k, n_k, p, m)
 estimated noise and rank
 }
 \description{
-Title
+Estimate noise variance
 }

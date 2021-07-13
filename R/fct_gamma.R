@@ -52,13 +52,13 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         val_rows <- cluster_rows %>% 
           dplyr::tibble() %>% 
           dplyr::slice_sample(prop = val_frac) %>% 
-          pull()
+          dplyr::pull()
         
         train_rows <- cluster_rows %>% 
           dplyr::tibble() %>% 
           dplyr::filter(!((.) %in% val_rows)) %>% 
           dplyr::pull()
-
+        
         split_data <- fct_data_split(X_k, Y_k, val_frac)
         
         x_train <- split_data %>% 
@@ -79,9 +79,9 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         n_test <- split_data %>% 
           purrr::pluck("n_test")
         
-        rank_var_test <- fct_rank_var(x_train, y_train, n_test, p, m)
+        rank_var_test <- fct_rank_var(x_train, y_train, n_train, p, m)
         rank_search <- 1
-
+        
         sigmahat_test <- rank_var_test %>% 
           purrr::pluck("sigmahat")
         
@@ -89,19 +89,19 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         grid_search <- expand.grid(lam = penal_search, r = rank_search)
         model_k <- list(grid_search$lam, grid_search$r) %>% 
           purrr::pmap_dfr(.f = function(.l, .r){
-            lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
+            lam_0 <- fct_lam_coef(x_train, sigmahat_test, m, p)
+            # lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
             # lam_0 <- 1
             lam <- .l*lam_0
             model <- fct_sarrs(y_train,x_train,.r, lam, "grLasso")
             error <- mean((y_test-(cbind(x_test,1) %*% model$Ahat))^2)
-            
             dplyr::tibble(lam = lam, rank = .r, error = error, model = list(model))
           }) %>% 
           dplyr::arrange(error) %>% 
           dplyr::slice(1) %>% 
           dplyr::pull(model) %>% 
           purrr::pluck(1)
-
+        
       } else if (nrow(X_k) <= 1){
         
         # model_k <- fct_sarrs(Y_k, X_k, 1, 1, "grLasso")
