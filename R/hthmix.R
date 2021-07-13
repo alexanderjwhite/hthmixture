@@ -2,8 +2,7 @@
 #'
 #' @param x matrix
 #' @param y matrix
-#' @param k_min minimum k to search
-#' @param k_max maximum k to search
+#' @param k number of clusters
 #' @param lam penalization parameter
 #' @param rank rank
 #' @param chains number of chains
@@ -21,14 +20,11 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-hthmix <- function(x, y, k_min = 2, k_max = 8, lam = NULL, rank = NULL, chains = 50, maxiter = 100, verbose = TRUE, val_frac = 0.2, penal_search = 1:20/20){
+hthmix <- function(x, y, k, lam = NULL, rank = NULL, chains = 50, maxiter = 100, verbose = TRUE, val_frac = 0.2, penal_search = 1:20/20){
   
   tictoc::tic()
   global_opt_ll <- -Inf
   lik_store <- NULL
-  
-  # Substitute
-  k <- k_min
   
   N <- x %>% nrow()
   clust_assign <- fct_initialize(k, N)
@@ -42,15 +38,13 @@ hthmix <- function(x, y, k_min = 2, k_max = 8, lam = NULL, rank = NULL, chains =
         ll_i <- model_i %>% purrr::pluck("ll")
         ll_store_i <- model_i %>% purrr::pluck("ll_store")
         clust_assign <- model_i %>% purrr::pluck("assign")
+        A <- model_i %>% purrr::pluck("A")
         clust_assign_store <- model_i %>% purrr::pluck("assign_store")
         iter_i <- model_i %>% purrr::pluck("iter")
         lik_store <- c(lik_store, ll_i)
         global_opt_ll <- fct_global_opt(ll_i, global_opt_ll)
-        # if(verbose){
-        #   
-        #   # print(paste("Chain:",.c,"ll:",scales::number(ll_i, accuracy = 0.01, big.mark = ",")))
-        # }
-        return(tibble(llik = ll_i, chain = .c, iter = iter_i, assign = list(final_assign = clust_assign, assign_store = clust_assign_store, lik_store = ll_store_i)))
+
+        return(tibble(llik = ll_i, chain = .c, iter = iter_i, assign = list(final_assign = clust_assign, A = A, assign_store = clust_assign_store, lik_store = ll_store_i)))
       }
     )
   time <- tictoc::toc()
