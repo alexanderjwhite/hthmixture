@@ -20,7 +20,7 @@
 #' @importFrom rlang .data
 #'
 #' @examples
-hthmix <- function(x, y, k, lam = NULL, rank = NULL, chains = 50, maxiter = 100, verbose = TRUE, val_frac = 0.2, penal_search = 1:20/20){
+hthmix <- function(x, y, k, rank = 1, lam = NULL, chains = 1, maxiter = 1e3, verbose = TRUE, val_frac = 0.2, penal_search = 1:20/20){
   
   tictoc::tic()
   global_opt_ll <- -Inf
@@ -39,12 +39,13 @@ hthmix <- function(x, y, k, lam = NULL, rank = NULL, chains = 50, maxiter = 100,
         ll_store_i <- model_i %>% purrr::pluck("ll_store")
         clust_assign <- model_i %>% purrr::pluck("assign")
         A <- model_i %>% purrr::pluck("A")
+        sig_vec <- model_i %>% purrr::pluck("sig_vec")
         clust_assign_store <- model_i %>% purrr::pluck("assign_store")
         iter_i <- model_i %>% purrr::pluck("iter")
         lik_store <- c(lik_store, ll_i)
         global_opt_ll <- fct_global_opt(ll_i, global_opt_ll)
 
-        return(tibble(llik = ll_i, chain = .c, iter = iter_i, assign = list(final_assign = clust_assign, A = A, assign_store = clust_assign_store, lik_store = ll_store_i)))
+        return(tibble(llik = ll_i, chain = .c, iter = iter_i, assign = list(final_assign = clust_assign, A = A, sig_vec = sig_vec, assign_store = clust_assign_store, lik_store = ll_store_i)))
       }
     )
   time <- tictoc::toc()

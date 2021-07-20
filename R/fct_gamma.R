@@ -42,10 +42,8 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         dplyr::as_tibble(.name_repair = "universal") %>% 
         dplyr::slice(cluster_rows) %>% 
         as.matrix()
-      
-      
-      
-      if((is.null(lam)|is.null(rank)) & nrow(X_k) > 3){
+
+      if(is.null(lam) & nrow(X_k) > 3){
         
         # Cross Validate to select penalization
         
@@ -80,22 +78,19 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
           purrr::pluck("n_test")
         
         rank_var_test <- fct_rank_var(x_train, y_train, n_train, p, m)
-        rank_search <- 1
         
         sigmahat_test <- rank_var_test %>% 
           purrr::pluck("sigmahat")
         
         
-        grid_search <- expand.grid(lam = penal_search, r = rank_search)
-        model_k <- list(grid_search$lam, grid_search$r) %>% 
-          purrr::pmap_dfr(.f = function(.l, .r){
+        grid_search <- expand.grid(lam = penal_search)
+        model_k <- list(grid_search$lam) %>% 
+          purrr::pmap_dfr(.f = function(.l){
             lam_0 <- fct_lam_coef(x_train, sigmahat_test, m, p)
-            # lam_0 <- 2*sigmahat_test*max(sqrt(colSums(x_train^2)))/n_train/.r*(sqrt(.r)+2*sqrt(log(p)))
-            # lam_0 <- 1
             lam <- .l*lam_0
-            model <- fct_sarrs(y_train,x_train,.r, lam, "grLasso")
+            model <- fct_sarrs(y_train,x_train,rank, lam, "grLasso")
             error <- mean((y_test-(cbind(x_test,1) %*% model$Ahat))^2)
-            dplyr::tibble(lam = lam, rank = .r, error = error, model = list(model))
+            dplyr::tibble(lam = lam, rank = rank, error = error, model = list(model))
           }) %>% 
           dplyr::arrange(error) %>% 
           dplyr::slice(1) %>% 
@@ -120,7 +115,6 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
         model_k <- fct_sarrs(Y_k, X_k, rank, lam, "grLasso")
       }
       
-      
       A_k <- model_k %>% 
         purrr::pluck("Ahat")
       
@@ -131,15 +125,16 @@ fct_gamma <- function(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal
                    dplyr::bind_cols(int = rep(1,N)) %>% 
                    as.matrix()) %*% A_k
       
-      
-      
       gam <- fct_log_lik(mu_mat, sig_vec, y, N, m)
-      return(list(gamma = dplyr::tibble(gam) %>% stats::setNames(names[.x]), A_k = A_k))
+      return(list(gamma = dplyr::tibble(gam) %>% stats::setNames(names[.x]), A_k = A_k, sig_vec = sig_vec))
       
     })
   gamma <- gamma_calc %>% 
     purrr::map_dfc(.f = function(.x){.x %>% purrr::pluck("gamma")})
   A <- gamma_calc %>% 
     purrr::map(.f = function(.x){.x %>% purrr::pluck("A_k")})
-  return(list(gamma = gamma, A = A))
+  sig_vec <- gamma_calc %>% 
+    purrr::map(.f = function(.x){.x %>% purrr::pluck("sig_vec")})
+  
+  return(list(gamma = gamma, A = A, sig_vec = sig_vec))
 }

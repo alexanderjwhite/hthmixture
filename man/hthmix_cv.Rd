@@ -10,7 +10,7 @@ hthmix_cv(
   k_min = 2,
   k_max = 8,
   r_min = 1,
-  r_max = 3,
+  r_max = 2,
   lam = NULL,
   chains = 50,
   maxiter = 100,

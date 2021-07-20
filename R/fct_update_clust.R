@@ -10,7 +10,7 @@
 #' @import purrr
 #'
 #' @examples
-fct_update_clust <- function(N, gamma){
+fct_update_clust <- function(gamma, N){
   1:N %>% 
     purrr::map_int(
       .f = function(.x){

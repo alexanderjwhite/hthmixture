@@ -4,12 +4,12 @@
 \alias{fct_update_clust}
 \title{Update Cluster}
 \usage{
-fct_update_clust(N, gamma)
+fct_update_clust(gamma, N)
 }
 \arguments{
-\item{N}{observations}
-
 \item{gamma}{posterior}
+
+\item{N}{observations}
 }
 \value{
 updated cluster assignments

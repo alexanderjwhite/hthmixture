@@ -8,10 +8,10 @@ hthmix(
   x,
   y,
   k,
+  rank = 1,
   lam = NULL,
-  rank = NULL,
-  chains = 50,
-  maxiter = 100,
+  chains = 1,
+  maxiter = 1000,
   verbose = TRUE,
   val_frac = 0.2,
   penal_search = 1:20/20
@@ -24,9 +24,9 @@ hthmix(
 
 \item{k}{number of clusters}
 
-\item{lam}{penalization parameter}
-
 \item{rank}{rank}
+
+\item{lam}{penalization parameter}
 
 \item{chains}{number of chains}
 

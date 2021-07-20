@@ -39,14 +39,15 @@ fct_hthmix_comp <- function(x, y, k, maxiter, lam, rank, clust_assign, val_frac,
       purrr::pluck("gamma")
     A <- gamma_model %>% 
       purrr::pluck("A")
+    sig_vec <- gamma_model %>% 
+      purrr::pluck("sig_vec")
     weighted_ll <- fct_weighted_ll(gamma)
     ll_store <- ll_store %>% bind_rows(tibble(iter = iter, ll = weighted_ll))
     clust_assign_old <- clust_assign
-    clust_assign <- fct_update_clust(N, gamma)
+    clust_assign <- fct_update_clust(gamma, N)
     clust_store <- clust_store %>% bind_rows(tibble(iter = rep(iter,N), assign=clust_assign))
     conv <- (clust_assign != clust_assign_old) %>% sum()
-    # print(paste("iter", iter,"::: conv", conv,"::: lik",round(weighted_ll,digits = 2)))
     
   }
-  return(list(ll = weighted_ll, assign = clust_assign, A = A, assign_store = clust_store, ll_store = ll_store, iter = iter))
+  return(list(ll = weighted_ll, assign = clust_assign, A = A, sig_vec = sig_vec, assign_store = clust_store, ll_store = ll_store, iter = iter))
 }
