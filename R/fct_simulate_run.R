@@ -70,7 +70,7 @@ fct_simulate_run <- function(params){
   y <- y[clust_assign_true_vec,]
 
   
-  model <- hthmix(x, y, k, rank = r, chains = 1, maxiter = maxiter, penal_search = 1:100/100)
+  model <- hthmix(x, y, k, rank = r[1], chains = 1, maxiter = maxiter, penal_search = 1:100/100)
   
   final_assign <- model %>% purrr::pluck("result","assign","final_assign")
   

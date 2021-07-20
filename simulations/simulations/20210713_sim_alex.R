@@ -5,11 +5,11 @@ library(dplyr)
 library(hthmixture)
 N <- c(100,200)
 k <- 2:3
-sigma <- 1:2
+sigma <- 1
 dim <- c(50,200)
 s <- c(10,20)
 r <- 1:2
-rep <- 1:5
+rep <- 1:3
 
 future::plan("multicore")
 grid <- (expand.grid(N=N,k=k,sigma=sigma,dim=dim,s=s,r=r,rep=rep))
