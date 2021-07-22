@@ -12,7 +12,7 @@ r <- 1:2
 rep <- 1:10
 
 # future::plan("multicore")
-grid <- (expand.grid(N=N,k=k,sigma=sigma,dim=dim,s=s,r=r,rep=rep))[1,]
+grid <- (expand.grid(N=N,k=k,sigma=sigma,dim=dim,s=s,r=r,rep=rep))[3,]
 
 result <- list(grid$N, grid$k, grid$sigma, grid$dim, grid$s, grid$r, grid$rep,1:nrow(grid)) %>% 
   # furrr::future_pmap(options = future_options(seed = 19921124),
