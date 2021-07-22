@@ -12,8 +12,6 @@
 #'
 #' @examples
 fct_full_model_error <- function(x, y, k, model){
-  # est_assign <- model %>% 
-  #   purrr::pluck("result", "assign", "final_assign")
   
   N <- x %>% nrow()
   
@@ -32,12 +30,14 @@ fct_full_model_error <- function(x, y, k, model){
       A_k <- A %>% purrr::pluck(.x)
       sig_k <- sig_vec %>% purrr::pluck(.x)
       
+      if(is.null(A_k)|is.null(sig_k)){return(dplyr::tibble(-Inf))}
+      
       mu_mat <- (x %>% 
                    dplyr::bind_cols(int = rep(1,N)) %>% 
                    as.matrix()) %*% A_k
       
       gam <- fct_log_lik(mu_mat, sig_k, y, N, m)
-      return(tibble(gam))
+      return(dplyr::tibble(gam))
       
     }) %>% 
     fct_update_clust(N)
