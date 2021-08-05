@@ -1,13 +1,12 @@
 paths <- .libPaths()
 paths <- c("/geode2/home/u100/whitealj/BigRed3/r_4_0_4_library/",paths)
 .libPaths(paths)
-library(dplyr)
 library(hthmixture)
 N <- c(100,200)
-k <- 2:3
+k <- 3
 sigma <- 1
 dim <- c(50,200)
-s <- c(10,20)
+s <- c(5,15)
 r <- 1:2
 rep <- 1:3
 
@@ -41,6 +40,8 @@ result <- list(grid$N, grid$k, grid$sigma, grid$dim, grid$s, grid$r, grid$rep,1:
                        } else {
                          return(list(N = .N, k = .k, sigma = .sigma, dim = .dim, s = .s, r = .r, rep = .rep, id = .prog, res = results$error))
                        }
+                       
+                       
                      })
 
-result %>% saveRDS("20210709_results.rds")
+result %>% saveRDS("20210722_results.rds")

@@ -1,11 +1,11 @@
 Package: hthmixture
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: High Dimensional Multivariate Mixture Regression
+Version: 0.0.0.9001
 Authors@R: 
-    person(given = "First",
+    person(given = "Alex",
            family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
+           role = c("White", "cre"),
+           email = "whitealj@iu.edu",
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
@@ -23,5 +23,6 @@ Imports:
     pushoverr,
     stats,
     rlang,
-    tidyselect
+    tidyselect,
+    valse
     

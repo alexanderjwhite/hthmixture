@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#SBATCH -J hthmix_rna_results
+#SBATCH -o hth_%j.txt
+#SBATCH -e hth_%j.err
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=whitealj@iu.edu
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=58G
+#SBATCH --time=96:00:00
+
+module load r/4.0.4
+cd "/geode2/home/u100/whitealj/BigRed3/scripts/"
+R CMD BATCH "/geode2/home/u100/whitealj/BigRed3/scripts/rna_model.R"

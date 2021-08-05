@@ -8,6 +8,8 @@
 #' @import purrr
 #' @import dplyr
 #' @import stats
+#' @import tictoc
+#' @import valse
 #'
 #' @examples 
 fct_simulate_run <- function(params){
@@ -70,13 +72,36 @@ fct_simulate_run <- function(params){
   y <- y[clust_assign_true_vec,]
 
   
-  model <- hthmix(x, y, k, rank = r[1], chains = 1, maxiter = maxiter, penal_search = 1:100/100)
+  print("starting hth")
+  model_hth <- hthmix(x, y, k, rank = r[1], chains = 1, maxiter = maxiter, penal_search = 1:100/100)
+  final_assign_hth <- model_hth %>% purrr::pluck("result","assign","final_assign")
+  iter_hth <- model_hth %>% purrr::pluck("result", "iter", 1)
+  time_hth <- model_hth %>% purrr::pluck("time")
+  print("hth finished")
   
-  final_assign <- model %>% purrr::pluck("result","assign","final_assign")
+  print("starting kmeans")
+  data_kmeans <- x %>% cbind(y)
+  tictoc::tic()
+  model_kmeans <- kmeans(data_kmeans, k)
+  time_kmeans <- tictoc::toc()
+  time_kmeans <- time_kmeans$toc-time_kmeans$tic
+  print("kmeans finished")
   
-  iter <- model %>% purrr::pluck("result", "iter", 1)
+  print("starting valse")
+  safe_valse <- purrr::safely(valse::runValse)
+  tictoc::tic()
+  model_valse <- safe_valse(x, y, kmin = k, kmax = k, rank.min = r[1], rank.max = r[1], verbose = TRUE)
+  time_valse <- tictoc::toc()
+  time_valse <- time_valse$toc-time_valse$tic
+  print("valse finished")
   
-  time <- model %>% purrr::pluck("time")
-  
-  return(list(true=clust_assign_true,est=final_assign, iter = iter, time = time))
+  return(list(true=clust_assign_true,
+              est_hth=final_assign_hth, 
+              iter_hth = iter_hth, 
+              time_hth = time_hth,
+              est_kmeans = model_kmeans,
+              time_kmeans = time_kmeans,
+              est_valse = model_valse,
+              time_valse = time_valse
+              ))
 }

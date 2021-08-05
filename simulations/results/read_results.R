@@ -1,4 +1,4 @@
-sim_res <- readRDS("G:/My Drive/Dissertation/HTH Mixture/hthmixture/simulations/results/20210709_results.rds")
+sim_res <- readRDS("G:/My Drive/Dissertation/HTH Mixture/hthmixture/simulations/results/20210722_results.rds")
 
 results_summ <- sim_res %>% 
   purrr::map_dfr(.f = function(.x){
@@ -24,7 +24,7 @@ results_summ %>%
   group_by(N,k,sigma,dim,s,r) %>% 
   summarize(iter = mean(iter),
             time=mean(time),
-            acc = mean(acc)) %>% 
+            acc = mean(acc)) %>% View()
   tidyr::drop_na() %>% 
   filter(k==2) %>% 
   View()

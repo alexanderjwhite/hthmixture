@@ -20,8 +20,8 @@ best_model_test$result %>%
 best_model <- best_model_test$result %>% filter(chain==3)
 test <- best_model_test
 test$result <- test$result %>% filter(chain==3)
-best_assign <- test %>% purrr::pluck("assign", "final_assign")
-best_model %>% purrr::pluck("assign", "assign_store") %>% 
+best_assign <- test %>% purrr::pluck("result", "assign", "final_assign")
+best_model %>% purrr::pluck("result","assign", "assign_store") %>% 
   group_by(iter) %>% 
   summarize(n=n())
 
