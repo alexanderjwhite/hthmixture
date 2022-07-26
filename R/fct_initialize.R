@@ -10,10 +10,9 @@
 #' @import purrr
 #' @import stats
 #'
-#' @examples
 fct_initialize <- function(k, N){
   
-  init_int <- rep(1/k,k) %>% cumsum()
+  init_int <- cumsum(rep(1/k,k))
   init_rand_assign <- stats::runif(N)
   
  init_rand_assign %>% 

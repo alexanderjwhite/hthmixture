@@ -4,17 +4,7 @@
 \alias{fct_hthmix_comp}
 \title{Compute mixrrr}
 \usage{
-fct_hthmix_comp(
-  x,
-  y,
-  k,
-  maxiter,
-  lam,
-  rank,
-  clust_assign,
-  val_frac,
-  penal_search
-)
+fct_hthmix_comp(x, y, k, maxiter, clust_assign)
 }
 \arguments{
 \item{x}{matrix}
@@ -25,11 +15,11 @@ fct_hthmix_comp(
 
 \item{maxiter}{maximum number of iterations}
 
+\item{clust_assign}{initial cluster assignment}
+
 \item{lam}{penalization parameter}
 
 \item{rank}{rank}
-
-\item{clust_assign}{initial cluster assignment}
 
 \item{val_frac}{validation fraction}
 

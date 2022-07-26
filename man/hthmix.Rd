@@ -4,18 +4,7 @@
 \alias{hthmix}
 \title{Main mixrrr function}
 \usage{
-hthmix(
-  x,
-  y,
-  k,
-  rank = 1,
-  lam = NULL,
-  chains = 1,
-  maxiter = 1000,
-  verbose = TRUE,
-  val_frac = 0.2,
-  penal_search = 1:20/20
-)
+hthmix(x, y, k, maxiter = 1000, verbose = TRUE)
 }
 \arguments{
 \item{x}{matrix}
@@ -24,19 +13,9 @@ hthmix(
 
 \item{k}{number of clusters}
 
-\item{rank}{rank}
-
-\item{lam}{penalization parameter}
-
-\item{chains}{number of chains}
-
 \item{maxiter}{maximum number of iterations}
 
 \item{verbose}{print progress?}
-
-\item{val_frac}{validation fraction}
-
-\item{penal_search}{penalization search parameter}
 }
 \value{
 results

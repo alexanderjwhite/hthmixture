@@ -10,7 +10,6 @@
 #' @import dplyr
 #' @export
 #'
-#' @examples
 fct_full_model_error <- function(x, y, k, model){
   
   N <- x %>% nrow()

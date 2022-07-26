@@ -4,7 +4,7 @@
 \alias{fct_gamma}
 \title{Compute Posterior}
 \usage{
-fct_gamma(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search)
+fct_gamma(x, y, k, N, clust_assign)
 }
 \arguments{
 \item{x}{matrix}
@@ -13,24 +13,12 @@ fct_gamma(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search)
 
 \item{k}{clusters}
 
-\item{N}{observations}
+\item{N}{doc}
 
-\item{p}{dimension}
-
-\item{m}{dimension}
-
-\item{lam}{penalty param}
-
-\item{rank}{rank}
-
-\item{clust_assign}{current assignment}
-
-\item{val_frac}{fraction validation}
-
-\item{penal_search}{search vector}
+\item{clust_assign}{doc}
 }
 \value{
-tibble of posterior
+doc
 }
 \description{
 Compute Posterior

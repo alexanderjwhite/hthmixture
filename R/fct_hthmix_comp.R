@@ -16,14 +16,11 @@
 #' @import dplyr
 #'
 #' @examples
-fct_hthmix_comp <- function(x, y, k, maxiter, lam, rank, clust_assign, val_frac, penal_search){
+fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
   
-  N <- x %>% 
-    nrow()
-  p <- x %>% 
-    ncol()
-  m <- y %>% 
-    ncol()
+  N <- nrow(x)
+  p <- ncol(x)
+  m <- ncol(y)
   
   iter <- 0
   conv <- Inf
@@ -34,13 +31,10 @@ fct_hthmix_comp <- function(x, y, k, maxiter, lam, rank, clust_assign, val_frac,
     
     pi_vec <- fct_pi_vec(clust_assign, k, N)
     
-    gamma_model <- fct_gamma(x, y, k, N, p, m, lam, rank, clust_assign, val_frac, penal_search)
-    gamma <- gamma_model %>% 
-      purrr::pluck("gamma")
-    A <- gamma_model %>% 
-      purrr::pluck("A")
-    sig_vec <- gamma_model %>% 
-      purrr::pluck("sig_vec")
+    gamma_model <- fct_gamma(x, y, k, N, clust_assign)
+    gamma <- gamma_model$gamma
+    A <- gamma_model$A
+    sig_vec <- gamma_model$sig_vec
     weighted_ll <- fct_weighted_ll(gamma)
     ll_store <- ll_store %>% bind_rows(tibble(iter = iter, ll = weighted_ll))
     clust_assign_old <- clust_assign

@@ -4,7 +4,7 @@
 \alias{fct_sim_mixrrr}
 \title{Simulate SARRS setting}
 \usage{
-fct_sim_mixrrr(n, a_rows, p, m, r, rho, sigma, b)
+fct_sim_mixrrr(n, a_rows, a_cols, p, m, rank, rho, sigma, b)
 }
 \arguments{
 \item{n}{sample size}
@@ -15,16 +15,13 @@ fct_sim_mixrrr(n, a_rows, p, m, r, rho, sigma, b)
 
 \item{m}{number of y features}
 
-\item{r}{rank}
-
 \item{rho}{correlation coefficient}
 
 \item{sigma}{error sd}
 
 \item{b}{coefficient}
-}
-\value{
 
+\item{r}{rank}
 }
 \description{
 Simulate SARRS setting

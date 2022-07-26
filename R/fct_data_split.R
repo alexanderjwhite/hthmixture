@@ -9,7 +9,6 @@
 #' 
 #' @import dplyr
 #'
-#' @examples
 fct_data_split <- function(x, y, val_frac){
   
   n <- x %>% 

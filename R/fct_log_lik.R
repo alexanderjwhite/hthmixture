@@ -9,9 +9,7 @@
 #' @return array
 #' @export
 #' 
-#' @import purrr
-#' @import dplyr
-#' @import stats
+#' @import purrr dplyr stats
 #'
 #' @examples
 fct_log_lik <- function(mu_mat, sig_vec, y, N, m){

@@ -10,19 +10,23 @@
 #' @return estimate of coefficients
 #' @export
 #' 
-#' @import grpreg
-#' @import stats
+#' @import grpreg stats
 #'
-#' @examples
-fct_sarrs <- function(Y,X,r,lam,ptype,V0=NULL){
+fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
   n= dim(X)[1]
   p= dim(X)[2]
   m= dim(Y)[2]
   group = rep(1:(p+1),r)
+  Y_thresh <- matrix(0, ncol = m, nrow = n)
+
   
-  if(is.null(V0)){
-    V0 = svd(Y,nu=r,nv=r)$v
-  }
+  thresh_1 <- sigma^2*(n+alpha*sqrt(n*log(max(p,m))))
+  j0 <- which(apply(Y, 2, function(x){sum(x^2)}) >= thresh_1)
+  Y0 <- Y_thresh
+  Y0[,j0] <- Y[,j0]
+
+  
+  V0 = svd(Y0,nu=r,nv=r)$v
   
   XX = kronecker(diag(rep(1,r)),cbind(X,1))
   YY = Y %*% V0
@@ -31,9 +35,16 @@ fct_sarrs <- function(Y,X,r,lam,ptype,V0=NULL){
   B1= matrix(fit1$beta[-1],nrow=p+1,ncol=r)
   B1[p+1,]=B1[p+1,]+fit1$beta[1]
   XB=cbind(X,1) %*% matrix(B1,nrow=p+1,ncol=r)
-  
   U1= svd(XB,nu=r,nv=r)$u
-  tmp= U1%*%t(U1)%*%Y
+  
+  thresh_2 <- beta*sigma^2*(r + 2*sqrt(3*r*log(max(p,m))) + 6*log(max(p,m)))
+  j1_tmp <- which(apply(Y, 2, function(x){sum((t(U1)%*%matrix(x))^2)}) > thresh_2)
+  j1 <- sort(unique(c(j0, j1_tmp)))
+  Y1 <- Y_thresh
+  Y1[,j1] <- Y[,j1]
+
+  
+  tmp= U1%*%t(U1)%*%Y1
   V1= svd(tmp,nu=r,nv=r)$v
   
   YY = Y %*% V1

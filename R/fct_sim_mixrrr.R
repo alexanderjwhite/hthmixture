@@ -15,13 +15,14 @@
 #' @import MASS
 #'
 #' @examples
-fct_sim_mixrrr <- function(n,a_rows, p, m, r, rho,sigma,b){
+fct_sim_mixrrr <- function(n,a_rows, a_cols, p, m, rank, rho,sigma,b){
   
   A <- matrix(0,p,m)
   nrow <- length(a_rows)
-  B0 <- matrix(rnorm(nrow*r),nrow,r)
-  B1 <- matrix(rnorm(r*m),r,m)
-  A[a_rows,] <- b*B0%*%B1
+  ncol <- length(a_cols)
+  B0 <- matrix(rnorm(nrow*rank),nrow,rank)
+  B1 <- matrix(rnorm(rank*ncol),rank,ncol)
+  A[a_rows,a_cols] <- b*B0%*%B1
   
   if(sigma == "small"){
     sigma <- 1
@@ -39,5 +40,5 @@ fct_sim_mixrrr <- function(n,a_rows, p, m, r, rho,sigma,b){
   E <- matrix(rnorm(n*m, sd = sigma),n,m)
   Y <- X%*%A + E
   
-  return(list(Y=Y,X=X,A=A,r=r,sig=Sigma,E=E))
+  return(list(Y=Y,X=X,A=A,rank=rank,sig=Sigma,E=E))
 }
