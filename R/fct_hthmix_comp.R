@@ -41,6 +41,7 @@ fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
     clust_assign <- fct_update_clust(gamma, N)
     clust_store <- clust_store %>% bind_rows(tibble(iter = rep(iter,N), assign=clust_assign))
     conv <- (clust_assign != clust_assign_old) %>% sum()
+    print(paste("i: ",iter, "| conv: ", conv))
     
   }
   return(list(ll = weighted_ll, assign = clust_assign, A = A, sig_vec = sig_vec, assign_store = clust_store, ll_store = ll_store, iter = iter))
