@@ -8,6 +8,6 @@
 #' @export
 #'
 fct_sigma <- function(y, n, m){
-  sv <- svd(sim$y)$d
+  sv <- svd(y)$d
   sigma_hat <- median(sv[sv!=0])/sqrt(max(n,m))
 }
