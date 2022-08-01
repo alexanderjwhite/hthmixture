@@ -26,10 +26,11 @@ hthmix <- function(x, y, k, nstart = 1, maxiter = 1e3, verbose = TRUE){
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))
     A <- c(A,list(model$A))
+    assign_store <- model$assign_store
     
   }
   best <- which.max(likelihood)
  
-  result <- list(llik = likelihood[best], assign = assignments[[best]], A = A[[best]])
+  result <- list(llik = likelihood[best], assign = assignments[[best]], A = A[[best]], assign_store = assign_store)
   return(result)
 }

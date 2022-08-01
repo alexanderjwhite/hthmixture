@@ -28,11 +28,12 @@ fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
   ll_store <- tibble(iter = 0, ll = -Inf)
   while(conv > 0 & iter < maxiter){
     iter <- iter + 1
-    
+    # print(clust_assign)
     pi_vec <- fct_pi_vec(clust_assign, k, N)
     
     gamma_model <- fct_gamma(x, y, k, N, clust_assign)
     gamma <- gamma_model$gamma
+    print(gamma)
     A <- gamma_model$A
     sig_vec <- gamma_model$sig_vec
     weighted_ll <- fct_weighted_ll(gamma)

@@ -1,7 +1,7 @@
 library(hthmixture)
 library(ggplot2)
 load("G:/My Drive/Dissertation/HTH Mixture/hthmixture/simulations/real data/Data.RData")
-model <- hthmix_cv(dat.mrm, dat.vol.std, k_min = 2, k_max = 3, r_min = 1, r_max = 1, chains = 1, maxiter = 1e3, penal_search = 1:100/100)
+model <- hthmix(dat.mrm, dat.vol.std, k = 3)
 model %>% saveRDS("G:/My Drive/Dissertation/HTH Mixture/hthmixture/simulations/real data/20210713_model.rds")
 
 model %>% 

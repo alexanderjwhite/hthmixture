@@ -34,19 +34,25 @@ fct_gamma <- function(x, y, k, N, clust_assign){
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
       model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso")
       
+      A_k <- model_k$Ahat 
+      sigvec <- model_k$sigvec
+      mu_mat <- cbind(x,1) %*% A_k
+      gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
+      
+      gamma <- cbind(gamma, gam)
+      A <- c(A,list(A_k))
+      sig_vec <- c(sig_vec,list(sigvec))
+      
     } else {
       # return(rep(-Inf,k))
-      return(list(gamma = rep(-Inf,k), A = NULL, sig_vec = NULL))
+      # return(list(gamma = matrix(rep(-Inf,k),nrow=1), A = NULL, sig_vec = NULL))
+      gamma <- cbind(gamma, rep(-Inf,N))
+      A <- c(A,list(NULL))
+      sig_vec <- c(sig_vec,list(NULL))
+      
     }
     
-    A_k <- model_k$Ahat 
-    sigvec <- model_k$sigvec
-    mu_mat <- cbind(x,1) %*% A_k
-    gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
-    
-    gamma <- cbind(gamma, gam)
-    A <- c(A,list(A_k))
-    sig_vec <- c(sig_vec,list(sigvec))
+   
     
     
   }
