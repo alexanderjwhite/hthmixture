@@ -35,7 +35,8 @@ fct_gamma <- function(x, y, k, N, clust_assign){
       model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso")
       
     } else {
-      return(rep(-Inf,k))
+      # return(rep(-Inf,k))
+      return(list(gamma = rep(-Inf,k), A = NULL, sig_vec = NULL))
     }
     
     A_k <- model_k$Ahat 
