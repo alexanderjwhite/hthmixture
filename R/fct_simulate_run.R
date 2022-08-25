@@ -9,7 +9,6 @@
 #' @import dplyr
 #' @import stats
 #' @import tictoc
-#' @import valse
 #'
 #' @examples 
 fct_simulate_run <- function(params){
@@ -87,21 +86,12 @@ fct_simulate_run <- function(params){
   time_kmeans <- time_kmeans$toc-time_kmeans$tic
   print("kmeans finished")
   
-  print("starting valse")
-  safe_valse <- purrr::safely(valse::runValse)
-  tictoc::tic()
-  model_valse <- safe_valse(x, y, kmin = k, kmax = k, rank.min = r[1], rank.max = r[1], verbose = TRUE)
-  time_valse <- tictoc::toc()
-  time_valse <- time_valse$toc-time_valse$tic
-  print("valse finished")
   
   return(list(true=clust_assign_true,
               est_hth=final_assign_hth, 
               iter_hth = iter_hth, 
               time_hth = time_hth,
               est_kmeans = model_kmeans,
-              time_kmeans = time_kmeans,
-              est_valse = model_valse,
-              time_valse = time_valse
+              time_kmeans = time_kmeans
               ))
 }

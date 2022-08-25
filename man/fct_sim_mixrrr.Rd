@@ -23,9 +23,6 @@ fct_sim_mixrrr(n, a_rows, p, m, r, rho, sigma, b)
 
 \item{b}{coefficient}
 }
-\value{
-
-}
 \description{
 Simulate SARRS setting
 }
