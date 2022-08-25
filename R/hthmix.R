@@ -12,7 +12,7 @@
 #' @import dplyr purrr
 #' @importFrom rlang .data
 #'
-hthmix <- function(x, y, k, nstart = 1, maxiter = 1e3, verbose = TRUE){
+hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1e3, verbose = TRUE){
   
   N <- x %>% nrow()
   
@@ -21,7 +21,11 @@ hthmix <- function(x, y, k, nstart = 1, maxiter = 1e3, verbose = TRUE){
   A <- NULL
   for (i in 1:nstart){
     print(paste("start: ",i))
-    clust_assign <- fct_initialize(k, N)
+    if(is.null(init_assign)){
+      clust_assign <- fct_initialize(k, N)
+    } else {
+        clust_assign <- init_assign
+    }
     model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign)
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))

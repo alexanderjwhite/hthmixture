@@ -47,7 +47,7 @@ fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
   }
   return(list(ll = weighted_ll, assign = clust_assign, A = A, sig_vec = sig_vec, assign_store = clust_store, ll_store = ll_store, iter = iter))
 }
-NMF::aheatmap(Ahat,Rowv = NA, Colv = NA)
+# NMF::aheatmap(Ahat,Rowv = NA, Colv = NA)
 # clust_assign_1 <- clust_assign
 # errors_1 <- errors
 # grid_1 <- grid

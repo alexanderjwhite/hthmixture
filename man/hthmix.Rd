@@ -4,7 +4,7 @@
 \alias{hthmix}
 \title{Main mixrrr function}
 \usage{
-hthmix(x, y, k, maxiter = 1000, verbose = TRUE)
+hthmix(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1000, verbose = TRUE)
 }
 \arguments{
 \item{x}{matrix}
