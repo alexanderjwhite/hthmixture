@@ -16,7 +16,7 @@ fct_gamma <- function(x, y, k, N, clust_assign){
   p <- dim(x)[2]
   m <- dim(y)[2]
   val_frac <- 0.2
-  grid <- seq(-8,8,1)
+  grid <- seq(-5,4,1)
  
   gamma <- NULL
   A <- NULL
@@ -48,14 +48,24 @@ fct_gamma <- function(x, y, k, N, clust_assign){
       models <- NULL
       errors <- rep(0,length(lam_grid))
       for (j in 1:length(lam_grid)){
-        print(j/length(lam_grid))
+        # print(j/length(lam_grid))
         model_j <- fct_sarrs(y_train, x_train, rank_hat, lam_grid[j], alpha, beta, sigma_hat, "grLasso")
         errors[j] <- mean((y_test-(cbind(x_test,1) %*% model_j$Ahat))^2)
         models <- c(models,list(model_j))
       }
+      
+      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_grid[which.min(errors)], alpha, beta, sigma_hat, "grLasso")
+      
+      A_k <- model_k$Ahat 
+      sigvec <- model_k$sigvec
+      mu_mat <- cbind(x,1) %*% A_k
+      gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
+      
+      gamma <- cbind(gamma, gam)
+      A <- c(A,list(A_k))
+      sig_vec <- c(sig_vec,list(sigvec))
 
-    }
-    else if (n_k > 1){
+    } else if (n_k > 1){
       # if (n_k > 1){
       
       sigma_hat <- fct_sigma(y_k, n_k, m)

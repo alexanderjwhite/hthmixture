@@ -3,6 +3,8 @@
 #' @param x matrix
 #' @param y matrix
 #' @param k number of clusters
+#' @param nstart number of times to initialize
+#' @param init_assign initial assignment
 #' @param maxiter maximum number of iterations
 #' @param verbose print progress?
 #'

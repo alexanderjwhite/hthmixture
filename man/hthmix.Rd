@@ -13,6 +13,10 @@ hthmix(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1000, verbose = TRUE)
 
 \item{k}{number of clusters}
 
+\item{nstart}{number of times to initialize}
+
+\item{init_assign}{initial assignment}
+
 \item{maxiter}{maximum number of iterations}
 
 \item{verbose}{print progress?}
