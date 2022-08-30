@@ -5,6 +5,9 @@
 #' @param k number of clusters
 #' @param nstart number of times to initialize
 #' @param init_assign initial assignment
+#' @param selection selection method
+#' @param alpha sparsity tuning parameter
+#' @param beta sparsity tuning parameter
 #' @param maxiter maximum number of iterations
 #' @param verbose print progress?
 #'
@@ -14,7 +17,7 @@
 #' @import dplyr purrr
 #' @importFrom rlang .data
 #'
-hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1e3, verbose = TRUE){
+hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("universal", "cv"), alpha = 2*sqrt(3), beta = 1, maxiter = 1e3, verbose = TRUE){
   
   N <- x %>% nrow()
   
@@ -28,7 +31,7 @@ hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1e3, verbo
     } else {
         clust_assign <- init_assign
     }
-    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign)
+    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta)
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))
     A <- c(A,list(model$A))

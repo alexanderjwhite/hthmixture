@@ -4,26 +4,24 @@
 \alias{fct_hthmix_comp}
 \title{Compute mixrrr}
 \usage{
-fct_hthmix_comp(x, y, k, maxiter, clust_assign)
+fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta)
 }
 \arguments{
 \item{x}{matrix}
 
 \item{y}{matrix}
 
-\item{k}{clusters}
+\item{k}{number of clusters}
 
 \item{maxiter}{maximum number of iterations}
 
 \item{clust_assign}{initial cluster assignment}
 
-\item{lam}{penalization parameter}
+\item{selection}{selection method}
 
-\item{rank}{rank}
+\item{alpha}{sparsity tuning parameter}
 
-\item{val_frac}{validation fraction}
-
-\item{penal_search}{penalization search vector}
+\item{beta}{sparsity tuning parameter}
 }
 \value{
 results

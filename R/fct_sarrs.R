@@ -24,7 +24,7 @@ fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
   j0 <- which(apply(Y, 2, function(x){sum(x^2)}) >= thresh_1)
   Y0 <- Y_thresh
   Y0[,j0] <- Y[,j0]
-
+  # Y0 <- Y
   
   V0 = svd(Y0,nu=r,nv=r)$v
   
@@ -42,6 +42,7 @@ fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
   j1 <- sort(unique(c(j0, j1_tmp)))
   Y1 <- Y_thresh
   Y1[,j1] <- Y[,j1]
+  # Y1 <- Y
 
   
   tmp= U1%*%t(U1)%*%Y1

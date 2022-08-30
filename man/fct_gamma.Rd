@@ -4,18 +4,24 @@
 \alias{fct_gamma}
 \title{Compute Posterior}
 \usage{
-fct_gamma(x, y, k, N, clust_assign)
+fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta)
 }
 \arguments{
 \item{x}{matrix}
 
 \item{y}{matrix}
 
-\item{k}{clusters}
+\item{k}{number of clusters}
 
 \item{N}{doc}
 
 \item{clust_assign}{doc}
+
+\item{selection}{selection method}
+
+\item{alpha}{sparsity tuning parameter}
+
+\item{beta}{sparsity tuning parameter}
 }
 \value{
 doc

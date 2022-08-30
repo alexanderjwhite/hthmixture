@@ -9,10 +9,12 @@
 #' @return doc
 #' @export
 #'
-fct_gamma <- function(x, y, k, N, clust_assign){
+fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta){
   
-  alpha <- 2*sqrt(3)
-  beta <- 1
+  # alpha <- 2*sqrt(3)
+  # beta <- 1
+  # alpha <- 0
+  # beta <- 0
   p <- dim(x)[2]
   m <- dim(y)[2]
   val_frac <- 0.2
@@ -22,7 +24,7 @@ fct_gamma <- function(x, y, k, N, clust_assign){
   A <- NULL
   sig_vec <- NULL
   for (i in 1:k){
-    
+    print(paste("Cluster", i))
     cluster_rows <- which((clust_assign==i))
     n_k <- length(cluster_rows)
     x_k <- x[cluster_rows,] 
@@ -30,7 +32,7 @@ fct_gamma <- function(x, y, k, N, clust_assign){
     eta_k <- sqrt(2*m) + sqrt(2*min(n_k,p))
     
     
-    if (n_k > 3){
+    if (n_k > 3 & selection != "universal"){
       val_size <- ifelse((val_frac*n_k) < 1, (n_k*0.5), (val_frac*n_k))
       val_rows <- sample(1:length(cluster_rows), size = val_size)
       train_rows <- which(!((1:length(cluster_rows)) %in% val_rows))
@@ -65,12 +67,15 @@ fct_gamma <- function(x, y, k, N, clust_assign){
       A <- c(A,list(A_k))
       sig_vec <- c(sig_vec,list(sigvec))
 
-    } else if (n_k > 1){
+    } else if (n_k > 1 | selection == "universal"){
       # if (n_k > 1){
       
       sigma_hat <- fct_sigma(y_k, n_k, m)
       rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
+      # print(sigma_hat)
+      # print(rank_hat)
+      # print(lam_univ)
       model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso")
       
       A_k <- model_k$Ahat 

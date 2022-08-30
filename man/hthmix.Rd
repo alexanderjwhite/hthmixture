@@ -4,7 +4,18 @@
 \alias{hthmix}
 \title{Main mixrrr function}
 \usage{
-hthmix(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1000, verbose = TRUE)
+hthmix(
+  x,
+  y,
+  k,
+  nstart = 1,
+  init_assign = NULL,
+  selection = c("universal", "cv"),
+  alpha = 2 * sqrt(3),
+  beta = 1,
+  maxiter = 1000,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{x}{matrix}
@@ -16,6 +27,12 @@ hthmix(x, y, k, nstart = 1, init_assign = NULL, maxiter = 1000, verbose = TRUE)
 \item{nstart}{number of times to initialize}
 
 \item{init_assign}{initial assignment}
+
+\item{selection}{selection method}
+
+\item{alpha}{sparsity tuning parameter}
+
+\item{beta}{sparsity tuning parameter}
 
 \item{maxiter}{maximum number of iterations}
 

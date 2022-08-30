@@ -1,14 +1,7 @@
 #' Compute mixrrr
 #'
-#' @param x matrix
-#' @param y matrix
-#' @param k clusters
-#' @param maxiter maximum number of iterations
-#' @param lam penalization parameter
-#' @param rank rank
+#' @inheritParams hthmix
 #' @param clust_assign initial cluster assignment
-#' @param val_frac validation fraction
-#' @param penal_search penalization search vector
 #'
 #' @return results
 #' @export
@@ -16,7 +9,7 @@
 #' @import dplyr
 #'
 #' @examples
-fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
+fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign, selection, alpha, beta){
   
   N <- nrow(x)
   p <- ncol(x)
@@ -28,10 +21,10 @@ fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign){
   ll_store <- tibble(iter = 0, ll = -Inf)
   while(conv > 0 & iter < maxiter){
     iter <- iter + 1
-    # print(clust_assign)
+    # print(paste("Iteration",i,"..."))
     pi_vec <- fct_pi_vec(clust_assign, k, N)
     
-    gamma_model <- fct_gamma(x, y, k, N, clust_assign)
+    gamma_model <- fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta)
     gamma <- gamma_model$gamma
     # print(gamma)
     A <- gamma_model$A
