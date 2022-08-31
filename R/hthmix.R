@@ -8,6 +8,7 @@
 #' @param selection selection method
 #' @param alpha sparsity tuning parameter
 #' @param beta sparsity tuning parameter
+#' @param y_sparse treat y as sparse?
 #' @param maxiter maximum number of iterations
 #' @param verbose print progress?
 #'
@@ -17,7 +18,7 @@
 #' @import dplyr purrr
 #' @importFrom rlang .data
 #'
-hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("universal", "cv"), alpha = 2*sqrt(3), beta = 1, maxiter = 1e3, verbose = TRUE){
+hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("universal", "cv"), alpha = 2*sqrt(3), beta = 1, y_sparse = FALSE, maxiter = 1e3, verbose = TRUE){
   
   N <- x %>% nrow()
   
@@ -31,7 +32,8 @@ hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("unive
     } else {
         clust_assign <- init_assign
     }
-    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta)
+    # print(clust_assign)
+    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta, y_sparse)
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))
     A <- c(A,list(model$A))

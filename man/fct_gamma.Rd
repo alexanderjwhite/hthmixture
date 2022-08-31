@@ -4,7 +4,7 @@
 \alias{fct_gamma}
 \title{Compute Posterior}
 \usage{
-fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta)
+fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse)
 }
 \arguments{
 \item{x}{matrix}
@@ -22,6 +22,8 @@ fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta)
 \item{alpha}{sparsity tuning parameter}
 
 \item{beta}{sparsity tuning parameter}
+
+\item{y_sparse}{treat y as sparse?}
 }
 \value{
 doc

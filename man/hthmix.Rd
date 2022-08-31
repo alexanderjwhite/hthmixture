@@ -13,6 +13,7 @@ hthmix(
   selection = c("universal", "cv"),
   alpha = 2 * sqrt(3),
   beta = 1,
+  y_sparse = FALSE,
   maxiter = 1000,
   verbose = TRUE
 )
@@ -33,6 +34,8 @@ hthmix(
 \item{alpha}{sparsity tuning parameter}
 
 \item{beta}{sparsity tuning parameter}
+
+\item{y_sparse}{treat y as sparse?}
 
 \item{maxiter}{maximum number of iterations}
 

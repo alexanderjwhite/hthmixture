@@ -9,7 +9,7 @@
 #' @return doc
 #' @export
 #'
-fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta){
+fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse){
   
   # alpha <- 2*sqrt(3)
   # beta <- 1
@@ -56,7 +56,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta){
         models <- c(models,list(model_j))
       }
       
-      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_grid[which.min(errors)], alpha, beta, sigma_hat, "grLasso")
+      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_grid[which.min(errors)], alpha, beta, sigma_hat, "grLasso", y_sparse)
       
       A_k <- model_k$Ahat 
       sigvec <- model_k$sigvec
@@ -76,7 +76,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta){
       # print(sigma_hat)
       # print(rank_hat)
       # print(lam_univ)
-      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso")
+      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
       
       A_k <- model_k$Ahat 
       sigvec <- model_k$sigvec

@@ -12,7 +12,7 @@
 #' 
 #' @import grpreg stats
 #'
-fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
+fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype, y_sparse = TRUE){
   n= dim(X)[1]
   p= dim(X)[2]
   m= dim(Y)[2]
@@ -23,8 +23,11 @@ fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
   thresh_1 <- sigma^2*(n+alpha*sqrt(n*log(max(p,m))))
   j0 <- which(apply(Y, 2, function(x){sum(x^2)}) >= thresh_1)
   Y0 <- Y_thresh
-  Y0[,j0] <- Y[,j0]
-  # Y0 <- Y
+  if(y_sparse){
+    Y0[,j0] <- Y[,j0]
+  } else {
+    Y0 <- Y
+  }
   
   V0 = svd(Y0,nu=r,nv=r)$v
   
@@ -41,8 +44,12 @@ fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype){
   j1_tmp <- which(apply(Y, 2, function(x){sum((t(U1)%*%matrix(x))^2)}) > thresh_2)
   j1 <- sort(unique(c(j0, j1_tmp)))
   Y1 <- Y_thresh
-  Y1[,j1] <- Y[,j1]
-  # Y1 <- Y
+  
+  if(y_sparse){
+    Y1[,j1] <- Y[,j1]
+  } else {
+    Y1 <- Y
+  }
 
   
   tmp= U1%*%t(U1)%*%Y1

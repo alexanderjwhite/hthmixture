@@ -9,7 +9,7 @@
 #' @import dplyr
 #'
 #' @examples
-fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign, selection, alpha, beta){
+fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign, selection, alpha, beta, y_sparse){
   
   N <- nrow(x)
   p <- ncol(x)
@@ -24,7 +24,7 @@ fct_hthmix_comp <- function(x, y, k, maxiter, clust_assign, selection, alpha, be
     # print(paste("Iteration",i,"..."))
     pi_vec <- fct_pi_vec(clust_assign, k, N)
     
-    gamma_model <- fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta)
+    gamma_model <- fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse)
     gamma <- gamma_model$gamma
     # print(gamma)
     A <- gamma_model$A

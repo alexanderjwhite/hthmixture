@@ -4,7 +4,17 @@
 \alias{fct_hthmix_comp}
 \title{Compute mixrrr}
 \usage{
-fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta)
+fct_hthmix_comp(
+  x,
+  y,
+  k,
+  maxiter,
+  clust_assign,
+  selection,
+  alpha,
+  beta,
+  y_sparse
+)
 }
 \arguments{
 \item{x}{matrix}
@@ -22,6 +32,8 @@ fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta)
 \item{alpha}{sparsity tuning parameter}
 
 \item{beta}{sparsity tuning parameter}
+
+\item{y_sparse}{treat y as sparse?}
 }
 \value{
 results
