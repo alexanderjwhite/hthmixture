@@ -15,6 +15,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   # beta <- 1
   # alpha <- 0
   # beta <- 0
+  s_mean <- purrr::safely(mean)
   p <- dim(x)[2]
   m <- dim(y)[2]
   val_frac <- 0.2
@@ -56,7 +57,8 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       for (j in 1:length(lam_grid)){
         # print(j/length(lam_grid))
         model_j <- fct_sarrs(y_train, x_train, rank_hat, lam_grid[j], alpha, beta, sigma_hat, "grLasso")
-        errors[j] <- mean((y_test-(cbind(x_test,1) %*% model_j$Ahat))^2)
+        error_j <- s_mean((y_test-(cbind(x_test,1) %*% model_j$Ahat))^2)
+        errors[j] <- ifelse(is.null(error_j$result), Inf, error_j$result)
         models <- c(models,list(model_j))
       }
       
