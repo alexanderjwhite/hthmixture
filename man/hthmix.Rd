@@ -14,6 +14,7 @@ hthmix(
   alpha = 2 * sqrt(3),
   beta = 1,
   y_sparse = FALSE,
+  rank = NULL,
   maxiter = 1000,
   verbose = TRUE
 )

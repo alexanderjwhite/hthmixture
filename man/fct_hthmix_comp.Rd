@@ -13,7 +13,8 @@ fct_hthmix_comp(
   selection,
   alpha,
   beta,
-  y_sparse
+  y_sparse,
+  rank
 )
 }
 \arguments{

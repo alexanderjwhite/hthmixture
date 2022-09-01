@@ -9,7 +9,7 @@
 #' @return doc
 #' @export
 #'
-fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse){
+fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank){
   
   # alpha <- 2*sqrt(3)
   # beta <- 1
@@ -44,7 +44,11 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       y_test <- y_k[val_rows]
 
       sigma_hat <- fct_sigma(y_k, n_k, m)
-      rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+      if(is.null(rank)){
+        rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+      } else {
+        rank_hat <- rank
+      }
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
       # lam_grid <- (2^(grid/2))*lam_univ
       
@@ -77,6 +81,13 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       # if (n_k > 1){
       
       sigma_hat <- fct_sigma(y_k, n_k, m)
+      
+      if(is.null(rank)){
+        rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+      } else {
+        rank_hat <- rank
+      }
+      
       rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
       # print(sigma_hat)

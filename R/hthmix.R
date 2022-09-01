@@ -18,7 +18,7 @@
 #' @import dplyr purrr
 #' @importFrom rlang .data
 #'
-hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("universal", "cv"), alpha = 2*sqrt(3), beta = 1, y_sparse = FALSE, maxiter = 1e3, verbose = TRUE){
+hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("universal", "cv"), alpha = 2*sqrt(3), beta = 1, y_sparse = FALSE, rank = NULL, maxiter = 1e3, verbose = TRUE){
   
   N <- x %>% nrow()
   
@@ -33,7 +33,7 @@ hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("unive
         clust_assign <- init_assign
     }
     # print(clust_assign)
-    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta, y_sparse)
+    model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta, y_sparse, rank)
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))
     A <- c(A,list(model$A))

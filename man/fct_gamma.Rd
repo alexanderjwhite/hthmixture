@@ -4,7 +4,7 @@
 \alias{fct_gamma}
 \title{Compute Posterior}
 \usage{
-fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse)
+fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank)
 }
 \arguments{
 \item{x}{matrix}
