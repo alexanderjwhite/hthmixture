@@ -45,7 +45,11 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       sigma_hat <- fct_sigma(y_k, n_k, m)
       rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
-      lam_grid <- (2^(grid/2))*lam_univ
+      # lam_grid <- (2^(grid/2))*lam_univ
+      
+      max_norm <- max(apply(x_k, 2, function(.x){norm(.x,type = "2")}))
+      lambar <- 2*sigma_hat*max_norm*(sqrt(rank_hat)+2*sqrt(log(p)))
+      lam_grid <- seq(0,lambar,length.out=21)[-1]
       
       models <- NULL
       errors <- rep(0,length(lam_grid))
