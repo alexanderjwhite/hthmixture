@@ -16,6 +16,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   # alpha <- 0
   # beta <- 0
   s_mean <- purrr::safely(mean)
+  safe_sarrs <- purrr::safely(fct_sarrs)
   p <- dim(x)[2]
   m <- dim(y)[2]
   val_frac <- 0.2
@@ -95,16 +96,24 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       # print(sigma_hat)
       # print(rank_hat)
       # print(lam_univ)
-      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
+      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
+      if(is.null(model_k_att$error)){
+        model_k <- model_k_att$result
+        
+        A_k <- model_k$Ahat 
+        sigvec <- model_k$sigvec
+        mu_mat <- cbind(x,1) %*% A_k
+        gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
+        
+        gamma <- cbind(gamma, gam)
+        A <- c(A,list(A_k))
+        sig_vec <- c(sig_vec,list(sigvec))
+      } else {
+        gamma <- cbind(gamma, rep(-Inf,N))
+        A <- c(A,list(NULL))
+        sig_vec <- c(sig_vec,list(NULL))
+      }
       
-      A_k <- model_k$Ahat 
-      sigvec <- model_k$sigvec
-      mu_mat <- cbind(x,1) %*% A_k
-      gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
-      
-      gamma <- cbind(gamma, gam)
-      A <- c(A,list(A_k))
-      sig_vec <- c(sig_vec,list(sigvec))
       
     } else {
       # return(rep(-Inf,k))
