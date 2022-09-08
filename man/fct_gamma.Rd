@@ -4,7 +4,19 @@
 \alias{fct_gamma}
 \title{Compute Posterior}
 \usage{
-fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank)
+fct_gamma(
+  x,
+  y,
+  k,
+  N,
+  clust_assign,
+  selection,
+  alpha,
+  beta,
+  y_sparse,
+  rank,
+  max_rank
+)
 }
 \arguments{
 \item{x}{matrix}
@@ -24,6 +36,10 @@ fct_gamma(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank)
 \item{beta}{sparsity tuning parameter}
 
 \item{y_sparse}{treat y as sparse?}
+
+\item{rank}{force to be known rank}
+
+\item{max_rank}{limit rank}
 }
 \value{
 doc

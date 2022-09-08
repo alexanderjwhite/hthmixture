@@ -9,7 +9,7 @@
 #' @return doc
 #' @export
 #'
-fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank){
+fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank, max_rank){
   
   # alpha <- 2*sqrt(3)
   # beta <- 1
@@ -30,7 +30,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
     n_k <- length(cluster_rows)
     x_k <- x[cluster_rows,] 
     y_k <- y[cluster_rows, ] 
-    eta_k <- sqrt(2*m) + sqrt(2*min(n_k,p))
+    eta_k <- 3
     
     
     if (n_k > 3 & selection != "universal"){
@@ -46,6 +46,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       sigma_hat <- fct_sigma(y_k, n_k, m)
       if(is.null(rank)){
         rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_hat <- min(rank_hat, max_rank)
       } else {
         rank_hat <- rank
       }
@@ -77,13 +78,14 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       A <- c(A,list(A_k))
       sig_vec <- c(sig_vec,list(sigvec))
 
-    } else if (n_k > 1 | selection == "universal"){
+    } else if (n_k > 1 & selection == "universal"){
       # if (n_k > 1){
       
       sigma_hat <- fct_sigma(y_k, n_k, m)
       
       if(is.null(rank)){
         rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_hat <- min(rank_hat, max_rank)
       } else {
         rank_hat <- rank
       }

@@ -14,7 +14,8 @@ fct_hthmix_comp(
   alpha,
   beta,
   y_sparse,
-  rank
+  rank,
+  max_rank
 )
 }
 \arguments{
@@ -35,6 +36,10 @@ fct_hthmix_comp(
 \item{beta}{sparsity tuning parameter}
 
 \item{y_sparse}{treat y as sparse?}
+
+\item{rank}{force to be known rank}
+
+\item{max_rank}{limit rank}
 }
 \value{
 results

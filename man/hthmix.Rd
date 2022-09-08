@@ -15,6 +15,7 @@ hthmix(
   beta = 1,
   y_sparse = FALSE,
   rank = NULL,
+  max_rank = 3,
   maxiter = 1000,
   verbose = TRUE
 )
@@ -37,6 +38,10 @@ hthmix(
 \item{beta}{sparsity tuning parameter}
 
 \item{y_sparse}{treat y as sparse?}
+
+\item{rank}{force to be known rank}
+
+\item{max_rank}{limit rank}
 
 \item{maxiter}{maximum number of iterations}
 
