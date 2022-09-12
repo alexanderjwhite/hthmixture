@@ -17,6 +17,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   # beta <- 0
   s_mean <- purrr::safely(mean)
   safe_sarrs <- purrr::safely(fct_sarrs)
+  safe_rank <- purrr::safely(fct_rank)
   p <- dim(x)[2]
   m <- dim(y)[2]
   val_frac <- 0.2
@@ -46,7 +47,8 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
 
       sigma_hat <- fct_sigma(y_k, n_k, m)
       if(is.null(rank)){
-        rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
         rank_hat <- min(rank_hat, max_rank)
       } else {
         rank_hat <- rank
@@ -85,13 +87,14 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       sigma_hat <- fct_sigma(y_k, n_k, m)
       
       if(is.null(rank)){
-        rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
+        rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
         rank_hat <- min(rank_hat, max_rank)
       } else {
         rank_hat <- rank
       }
       
-      rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+      # rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
       lam_univ <- fct_lambda(sigma_hat, p, n_k)
       # print(sigma_hat)
       # print(rank_hat)
