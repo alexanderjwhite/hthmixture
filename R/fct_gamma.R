@@ -4,7 +4,7 @@
 #' @param N doc
 #' @param clust_assign doc
 #' 
-#' @import dplyr stats purrr
+#' @import dplyr stats purrr spls
 #'
 #' @return doc
 #' @export
@@ -15,6 +15,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   # beta <- 1
   # alpha <- 0
   # beta <- 0
+  q_cv <- purrr::quietly(spls:cv.spls)
   s_mean <- purrr::safely(mean)
   safe_sarrs <- purrr::safely(fct_sarrs)
   safe_rank <- purrr::safely(fct_rank)
@@ -35,87 +36,104 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
     eta_k <- 3
     
     
-    if (n_k > 3 & selection != "universal"){
-      val_size <- ifelse((val_frac*n_k) < 1, (n_k*0.5), (val_frac*n_k))
-      val_rows <- sample(1:length(cluster_rows), size = val_size)
-      train_rows <- which(!((1:length(cluster_rows)) %in% val_rows))
-
-      x_train <- x_k[train_rows,]
-      x_test <- x_k[val_rows,]
-      y_train <- y_k[train_rows,]
-      y_test <- y_k[val_rows]
-
-      sigma_hat <- fct_sigma(y_k, n_k, m)
-      if(is.null(rank)){
-        rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
-        rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
-        rank_hat <- min(rank_hat, max_rank)
-      } else {
-        rank_hat <- rank
-      }
-      lam_univ <- fct_lambda(sigma_hat, p, n_k)
-      # lam_grid <- (2^(grid/2))*lam_univ
+    if (n_k > 3){
+      # val_size <- ifelse((val_frac*n_k) < 1, (n_k*0.5), (val_frac*n_k))
+      # val_rows <- sample(1:length(cluster_rows), size = val_size)
+      # train_rows <- which(!((1:length(cluster_rows)) %in% val_rows))
+      # 
+      # x_train <- x_k[train_rows,]
+      # x_test <- x_k[val_rows,]
+      # y_train <- y_k[train_rows,]
+      # y_test <- y_k[val_rows]
+      # 
+      # sigma_hat <- fct_sigma(y_k, n_k, m)
+      # if(is.null(rank)){
+      #   rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
+      #   rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
+      #   rank_hat <- min(rank_hat, max_rank)
+      # } else {
+      #   rank_hat <- rank
+      # }
+      # lam_univ <- fct_lambda(sigma_hat, p, n_k)
+      # # lam_grid <- (2^(grid/2))*lam_univ
+      # 
+      # max_norm <- max(apply(x_k, 2, function(.x){norm(.x,type = "2")}))
+      # lambar <- 2*sigma_hat*max_norm*(sqrt(rank_hat)+2*sqrt(log(p)))
+      # lam_grid <- seq(0,lambar,length.out=21)[-1]
+      # 
+      # models <- NULL
+      # errors <- rep(0,length(lam_grid))
+      # for (j in 1:length(lam_grid)){
+      #   # print(j/length(lam_grid))
+      #   model_j <- fct_sarrs(y_train, x_train, rank_hat, lam_grid[j], alpha, beta, sigma_hat, "grLasso")
+      #   error_j <- s_mean((y_test-(cbind(x_test,1) %*% model_j$Ahat))^2)
+      #   errors[j] <- ifelse(is.null(error_j$result), Inf, error_j$result)
+      #   models <- c(models,list(model_j))
+      # }
+      # 
+      # model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_grid[which.min(errors)], alpha, beta, sigma_hat, "grLasso", y_sparse)
+      # 
       
-      max_norm <- max(apply(x_k, 2, function(.x){norm(.x,type = "2")}))
-      lambar <- 2*sigma_hat*max_norm*(sqrt(rank_hat)+2*sqrt(log(p)))
-      lam_grid <- seq(0,lambar,length.out=21)[-1]
+      model_cv <- q_cv(x_k, y_k, K = 1, eta = seq(0.1,0.9,0.1), plot.it = FALSE)$result
+      model_k <- spls::spls(x_k, y_k, K = 1, eta = model_cv$eta.opt)
+      A_k <- model_k$betahat
+      sigvec <-  apply(y_k - (x_k%*% A_k), 2, stats::sd)
       
-      models <- NULL
-      errors <- rep(0,length(lam_grid))
-      for (j in 1:length(lam_grid)){
-        # print(j/length(lam_grid))
-        model_j <- fct_sarrs(y_train, x_train, rank_hat, lam_grid[j], alpha, beta, sigma_hat, "grLasso")
-        error_j <- s_mean((y_test-(cbind(x_test,1) %*% model_j$Ahat))^2)
-        errors[j] <- ifelse(is.null(error_j$result), Inf, error_j$result)
-        models <- c(models,list(model_j))
-      }
-      
-      model_k <- fct_sarrs(y_k, x_k, rank_hat, lam_grid[which.min(errors)], alpha, beta, sigma_hat, "grLasso", y_sparse)
-      
-      A_k <- model_k$Ahat 
-      sigvec <- model_k$sigvec
-      mu_mat <- cbind(x,1) %*% A_k
+       
+      mu_mat <- x %*% A_k
       gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
       
       gamma <- cbind(gamma, gam)
       A <- c(A,list(A_k))
       sig_vec <- c(sig_vec,list(sigvec))
 
-    } else if (n_k > 1 & selection == "universal"){
+    } else if (n_k > 1){
       # if (n_k > 1){
       
-      sigma_hat <- fct_sigma(y_k, n_k, m)
+      # sigma_hat <- fct_sigma(y_k, n_k, m)
+      # 
+      # if(is.null(rank)){
+      #   rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
+      #   rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
+      #   rank_hat <- min(rank_hat, max_rank)
+      # } else {
+      #   rank_hat <- rank
+      # }
+      # 
+      # # rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
+      # lam_univ <- fct_lambda(sigma_hat, p, n_k)
+      # # print(sigma_hat)
+      # # print(rank_hat)
+      # # print(lam_univ)
+      # model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
+      # if(is.null(model_k_att$error)){
+      #   model_k <- model_k_att$result
+      #   
+      #   A_k <- model_k$Ahat 
+      #   sigvec <- model_k$sigvec
+      #   mu_mat <- cbind(x,1) %*% A_k
+      #   gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
+      #   
+      #   gamma <- cbind(gamma, gam)
+      #   A <- c(A,list(A_k))
+      #   sig_vec <- c(sig_vec,list(sigvec))
+      # } else {
+      #   gamma <- cbind(gamma, rep(-Inf,N))
+      #   A <- c(A,list(NULL))
+      #   sig_vec <- c(sig_vec,list(NULL))
+      # }
       
-      if(is.null(rank)){
-        rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta_k)
-        rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
-        rank_hat <- min(rank_hat, max_rank)
-      } else {
-        rank_hat <- rank
-      }
+      model_k <- spls(x_k, y_k, K = 1, eta = 0.5)
+      A_k <- model_k$betahat
+      sigvec <-  apply(y_k - (x_k%*% A_k), 2, stats::sd)
       
-      # rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
-      lam_univ <- fct_lambda(sigma_hat, p, n_k)
-      # print(sigma_hat)
-      # print(rank_hat)
-      # print(lam_univ)
-      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
-      if(is.null(model_k_att$error)){
-        model_k <- model_k_att$result
-        
-        A_k <- model_k$Ahat 
-        sigvec <- model_k$sigvec
-        mu_mat <- cbind(x,1) %*% A_k
-        gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
-        
-        gamma <- cbind(gamma, gam)
-        A <- c(A,list(A_k))
-        sig_vec <- c(sig_vec,list(sigvec))
-      } else {
-        gamma <- cbind(gamma, rep(-Inf,N))
-        A <- c(A,list(NULL))
-        sig_vec <- c(sig_vec,list(NULL))
-      }
+      
+      mu_mat <- x %*% A_k
+      gam <- fct_log_lik(mu_mat, sigvec, y, N, m)
+      
+      gamma <- cbind(gamma, gam)
+      A <- c(A,list(A_k))
+      sig_vec <- c(sig_vec,list(sigvec))
       
       
     } else {
