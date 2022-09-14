@@ -15,7 +15,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   # beta <- 1
   # alpha <- 0
   # beta <- 0
-  q_cv <- purrr::quietly(spls:cv.spls)
+  q_cv <- purrr::quietly(spls::cv.spls)
   s_mean <- purrr::safely(mean)
   safe_sarrs <- purrr::safely(fct_sarrs)
   safe_rank <- purrr::safely(fct_rank)
