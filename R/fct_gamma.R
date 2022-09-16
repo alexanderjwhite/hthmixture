@@ -27,7 +27,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
   A <- NULL
   sig_vec <- NULL
   for (i in 1:k){
-    print(paste("Cluster", i))
+    # print(paste("Cluster", i))
     cluster_rows <- which((clust_assign==i))
     n_k <- length(cluster_rows)
     x_k <- x[cluster_rows,] 

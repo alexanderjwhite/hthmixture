@@ -2,6 +2,7 @@
 
 export("%>%")
 export(fct_banded_cov)
+export(fct_conv_check)
 export(fct_data_split)
 export(fct_full_model_error)
 export(fct_gamma)
