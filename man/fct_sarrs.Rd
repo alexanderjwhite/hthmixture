@@ -4,7 +4,17 @@
 \alias{fct_sarrs}
 \title{Compute SARRS algorithm}
 \usage{
-fct_sarrs(Y, X, r, lam, alpha, beta, sigma, ptype, y_sparse = TRUE)
+fct_sarrs(
+  Y,
+  X,
+  r,
+  lam,
+  alpha = 2 * sqrt(3),
+  beta = 1,
+  sigma,
+  ptype = "grLasso",
+  y_sparse = TRUE
+)
 }
 \arguments{
 \item{Y}{response matrix}

@@ -12,7 +12,7 @@
 #' 
 #' @import grpreg stats
 #'
-fct_sarrs <- function(Y,X,r,lam, alpha, beta, sigma, ptype, y_sparse = TRUE){
+fct_sarrs <- function(Y,X,r,lam, alpha = 2*sqrt(3), beta = 1, sigma, ptype = "grLasso", y_sparse = TRUE){
   n= dim(X)[1]
   p= dim(X)[2]
   m= dim(Y)[2]

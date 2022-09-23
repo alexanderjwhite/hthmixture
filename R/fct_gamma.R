@@ -95,7 +95,8 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       }
       
       # rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
-      lam_univ <- fct_lambda(sigma_hat, p, n_k)
+      # lam_univ <- fct_lambda(sigma_hat, p, n_k)
+      lam_univ <- 1
       # print(sigma_hat)
       # print(rank_hat)
       # print(lam_univ)

@@ -14,7 +14,10 @@ fct_simulate(
   s_x = 10,
   s_y = 15,
   rank = 2,
-  b = 1
+  b = 1,
+  type = "2",
+  h = 0.2,
+  case = "independent"
 )
 }
 \arguments{
