@@ -26,6 +26,7 @@ hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("unive
   
   assignments <- NULL
   likelihood <- NULL
+  ll_store <- NULL
   A <- NULL
   for (i in 1:nstart){
     print(paste("start: ",i))
@@ -38,12 +39,13 @@ hthmix <- function(x, y, k, nstart = 1, init_assign = NULL, selection = c("unive
     model <- fct_hthmix_comp(x, y, k, maxiter, clust_assign, selection, alpha, beta, y_sparse, rank, max_rank)
     likelihood <- c(likelihood,model$ll)
     assignments <- c(assignments,list(model$assign))
+    ll_store <- c(ll_store,list(model$ll_store))
     A <- c(A,list(model$A))
     assign_store <- model$assign_store
     
   }
   best <- which.max(likelihood)
  
-  result <- list(llik = likelihood[best], assign = assignments[[best]], A = A[[best]], assign_store = assign_store)
+  result <- list(llik = likelihood[best], assign = assignments[[best]], A = A[[best]], assign_store = assign_store, ll_store = ll_store[[best]])
   return(result)
 }

@@ -12,13 +12,14 @@
 #' 
 #' @import grpreg stats
 #'
-fct_sarrs <- function(Y,X,r,lam, alpha = 2*sqrt(3), beta = 1, sigma, ptype = "grLasso", y_sparse = TRUE){
+fct_sarrs <- function(Y,X,r,lam=NULL, alpha = 2*sqrt(3), beta = 1, sigma, ptype = "grLasso", y_sparse = TRUE){
   n= dim(X)[1]
   p= dim(X)[2]
   m= dim(Y)[2]
   group = rep(1:(p+1),r)
   Y_thresh <- matrix(0, ncol = m, nrow = n)
-
+  lambda_store <- c(0,0)
+  
   
   thresh_1 <- sigma^2*(n+alpha*sqrt(n*log(max(p,m))))
   j0 <- which(apply(Y, 2, function(x){sum(x^2)}) >= thresh_1)
@@ -34,7 +35,16 @@ fct_sarrs <- function(Y,X,r,lam, alpha = 2*sqrt(3), beta = 1, sigma, ptype = "gr
   XX = kronecker(diag(rep(1,r)),cbind(X,1))
   YY = Y %*% V0
   YY = as.vector(YY)
-  fit1 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, family="gaussian")
+  if(is.null(lam)){
+    fit1_cv <- grpreg::cv.grpreg(XX,YY,group, penalty= ptype, nfolds = 10, family="gaussian")
+    fit1 = grpreg::grpreg(XX,YY,group,lambda=fit1_cv$lambda.min, penalty= ptype, family="gaussian")
+    print(fit1_cv$lambda.min)
+    lambda_store[1] <- fit1_cv$lambda.min
+  } else {
+    fit1 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, family="gaussian")
+    lambda_store[1] <- lam
+  }
+  
   B1= matrix(fit1$beta[-1],nrow=p+1,ncol=r)
   B1[p+1,]=B1[p+1,]+fit1$beta[1]
   XB=cbind(X,1) %*% matrix(B1,nrow=p+1,ncol=r)
@@ -50,18 +60,27 @@ fct_sarrs <- function(Y,X,r,lam, alpha = 2*sqrt(3), beta = 1, sigma, ptype = "gr
   } else {
     Y1 <- Y
   }
-
+  
   
   tmp= U1%*%t(U1)%*%Y1
   V1= svd(tmp,nu=r,nv=r)$v
   
   YY = Y %*% V1
   YY = as.vector(YY)
-  fit2 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, family="gaussian")
+  
+  if(is.null(lam)){
+    fit2_cv <- grpreg::cv.grpreg(XX,YY,group, penalty= ptype, family="gaussian")
+    fit2 = grpreg::grpreg(XX,YY,group,lambda=fit2_cv$lambda.min, penalty= ptype, nfolds = 10, family="gaussian")
+    print(fit2_cv$lambda.min)
+    lambda_store[2] <- fit2_cv$lambda.min
+  } else {
+    fit2 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, nfolds = 10, family="gaussian")
+    lambda_store[2] <- lam
+  }
   B2= matrix(fit2$beta[-1],nrow=p+1,ncol=r)
   B2[p+1,]=B2[p+1,]+fit2$beta[1]
   
   Ahat= B2 %*% t(V1)
   sigvec = apply(Y- cbind(X,rep(1,nrow(X)))%*% Ahat, 2, stats::sd)
-  return(list(Ahat=Ahat,sigvec=sigvec))
+  return(list(Ahat=Ahat,sigvec=sigvec,lambda_store=lambda_store))
 }

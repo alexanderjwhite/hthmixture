@@ -9,7 +9,7 @@
 #' @return doc
 #' @export
 #'
-fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse, rank, max_rank){
+fct_gamma <- function(x, y, k, N, clust_assign, lambda, selection, alpha, beta, y_sparse, rank, max_rank){
   
   # alpha <- 2*sqrt(3)
   # beta <- 1
@@ -96,11 +96,11 @@ fct_gamma <- function(x, y, k, N, clust_assign, selection, alpha, beta, y_sparse
       
       # rank_hat <- fct_rank(x_k, y_k, sigma_hat, eta_k)
       # lam_univ <- fct_lambda(sigma_hat, p, n_k)
-      lam_univ <- 1
+      # lam_univ <- 1
       # print(sigma_hat)
       # print(rank_hat)
       # print(lam_univ)
-      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lam_univ, alpha, beta, sigma_hat, "grLasso", y_sparse)
+      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lambda, alpha, beta, sigma_hat, "grLasso", y_sparse)
       if(is.null(model_k_att$error)){
         model_k <- model_k_att$result
         

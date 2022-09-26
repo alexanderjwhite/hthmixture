@@ -1,6 +1,6 @@
-fct_j_lik <- function(x, y, k, clust_assign, selection = "universal", alpha = 2*sqrt(3), beta = 1, y_sparse = TRUE, max_rank = 3, rank = NULL){
+fct_j_lik <- function(x, y, k, clust_assign, lambda,  selection = "universal", alpha = 2*sqrt(3), beta = 1, y_sparse = TRUE, max_rank = 3, rank = NULL){
   N <- nrow(x)
-  gamma_model <- fct_gamma(x, y, k, N, clust_assign, selection = "universal", alpha = 2*sqrt(3), beta = 1, y_sparse = TRUE, max_rank = 3, rank = NULL)
+  gamma_model <- fct_gamma(x, y, k, N, clust_assign, lambda, selection = "universal", alpha = 2*sqrt(3), beta = 1, y_sparse = TRUE, max_rank = 3, rank = NULL)
   gamma <- gamma_model$gamma
   return(-fct_weighted_ll(gamma))
 }
@@ -26,14 +26,14 @@ fct_new_assign <- function(assign, k, p){
 
 
 
-fct_sim_anneal <- function(x, y, k, init_assign, t_1, mu, eps, p, N, max_iter = 1e3){
+fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, track, max_iter = 1e3){
   total_iter <- 0
   count <- 0
   # clust_shift <- clue::solve_LSAP(table(sim$true, init_assign), maximum = TRUE)
   # clust_reorder <- clust_shift[init_assign]
   # ari <- mclust::adjustedRandIndex(sim$true, clust_reorder)
   a_t <- a_b <- a_c <- init_assign
-  j_b <- j_c <- fct_j_lik(x, y, k, init_assign)
+  j_b <- j_c <- fct_j_lik(x, y, k, init_assign, lambda)
   t <- t_1
 
   # step 1 - trial assignment
@@ -42,7 +42,7 @@ fct_sim_anneal <- function(x, y, k, init_assign, t_1, mu, eps, p, N, max_iter = 
   while(t >= eps & total_iter <= max_iter){
     total_iter <- total_iter + 1
     a_t <- fct_new_assign(a_b, k, p) #step 1
-    j_t <- fct_j_lik(x, y, k, a_t)
+    j_t <- fct_j_lik(x, y, k, a_t, lambda)
 
     if(j_t <= j_c){ #step 2
       a_c <- a_t
@@ -71,7 +71,8 @@ fct_sim_anneal <- function(x, y, k, init_assign, t_1, mu, eps, p, N, max_iter = 
     if(count >= N){ #step 4
       t <- mu*t
     }
+    track <- rbind(track,tibble(iter=track$iter[nrow(track)]+1, ll=-j_b, type = "sim"))
     print(paste(total_iter, "|", t,"|",count, "|", j_b, "|", j_c,"|",j_t))
   }
-  return(a_b)
+  return(list(assign = a_b, track = track, lik = j_b))
 }
