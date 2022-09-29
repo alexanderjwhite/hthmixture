@@ -34,7 +34,7 @@ fct_alt_optimize <- function(x, y, k, clust_assign, lambda, alt_iter, anneal_ite
     
     # Simulated Annealing
     
-    model_anneal <- fct_sim_anneal(x = x, y = y, k, clust_assign = clust_assign, 
+    model_anneal <- fct_sim_anneal(x = x, y = y, k, init_assign = clust_assign, 
                                    lambda = lambda, t_1 = temp, mu = mu, eps = eps, 
                                    p = accept_prob, N = sim_N, track = lik_track, 
                                    clust_store = clust_store, anneal_iter = anneal_iter)
