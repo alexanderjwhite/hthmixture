@@ -26,12 +26,10 @@ fct_new_assign <- function(assign, k, p){
 
 
 
-fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, track, max_iter = 1e3){
+fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, track, clust_store, anneal_iter = 1e3){
   total_iter <- 0
   count <- 0
-  # clust_shift <- clue::solve_LSAP(table(sim$true, init_assign), maximum = TRUE)
-  # clust_reorder <- clust_shift[init_assign]
-  # ari <- mclust::adjustedRandIndex(sim$true, clust_reorder)
+
   a_t <- a_b <- a_c <- init_assign
   j_b <- j_c <- fct_j_lik(x, y, k, init_assign, lambda)
   t <- t_1
@@ -39,7 +37,7 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
   # step 1 - trial assignment
 
 
-  while(t >= eps & total_iter <= max_iter){
+  while(t >= eps & total_iter <= anneal_iter){
     total_iter <- total_iter + 1
     a_t <- fct_new_assign(a_b, k, p) #step 1
     j_t <- fct_j_lik(x, y, k, a_t, lambda)
@@ -51,13 +49,14 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
       if(j_t >= j_b){
         count <- count + 1
       } else {
+        changed <- sum(a_b != a_t)
+        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(iter,N), assign=clust_assign))
         j_b <- j_t
         a_b <- a_t
         count <- 0
         total_iter <- 0
-        # clust_shift <- clue::solve_LSAP(table(sim$true, a_b), maximum = TRUE)
-        # clust_reorder <- clust_shift[a_b]
-        # ari <- mclust::adjustedRandIndex(sim$true, clust_reorder)
+        
+        print(paste("i: ",iter, "| changed: ", changed, "| ll", -j_b))
       }
     } else {
       u <- runif(1) #step 3
@@ -72,7 +71,9 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
       t <- mu*t
     }
     track <- rbind(track,tibble(iter=track$iter[nrow(track)]+1, ll=-j_b, type = "sim"))
-    print(paste(total_iter, "|", t,"|",count, "|", j_b, "|", j_c,"|",j_t))
+    # print(paste(total_iter, "|", t,"|",count, "|", j_b, "|", j_c,"|",j_t))
+    if(total_iter %% 100 == 0){cat(".")}
   }
-  return(list(assign = a_b, track = track, lik = j_b))
+  lambda <- fct_select_lambda(x, y, k, clust_assign, initial = FALSE)
+  return(list(assign = a_b, lik_track = track, weighted_ll = j_b, lambda = lambda, clust_store = clust_store))
 }

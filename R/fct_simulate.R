@@ -16,7 +16,7 @@
 #' @return doc
 #' @export
 #'
-fct_simulate <- function(N = 200, k = 3, rho = 0, sigma = 1, p = 100, m = 50, s_x = 10, s_y = 15, rank = 2, b = 1, type = "2", h = 0.2, case = "independent"){
+fct_simulate <- function(N = 200, k = 3, sigma = 1, p = 100, m = 50, rank = 2, b = 1, d = 20, h = 0.2, case = "independent"){
   prob <- rep(1/k,k)
   int <- prob %>% cumsum()
   rand_assign <- stats::runif(N)
@@ -45,29 +45,13 @@ fct_simulate <- function(N = 200, k = 3, rho = 0, sigma = 1, p = 100, m = 50, s_
     dplyr::summarize(n = dplyr::n()) %>%
     dplyr::pull(n)
 
-  clust_iter <- 1
-  clust_min_x <- 1
-  clust_max_x <- s_x
-  clust_min_y <- 1
-  clust_max_y <- s_y
 
   x <- NULL
   y <- NULL
   a <- NULL
   for(i in 1:k){
-    a_rows <- clust_min_x:clust_max_x
-    a_cols <- clust_min_y:clust_max_y
-    clust_iter <- clust_iter + 1
-    clust_min_x <- clust_max_x+1
-    clust_max_x <- clust_iter*s_x
-    clust_min_y <- clust_max_y+1
-    clust_max_y <- clust_iter*s_y
-
-    if(type == "2"){
-      sim <- fct_sim_tsvd(n = n[i], p = p, m = m, b = b, rank = rank, h = h, case = case)
-    } else {
-      sim <- fct_sim_mixrrr(n[i],a_rows,a_cols,p,m,rank,rho,sigma,b)
-    }
+    
+    sim <- fct_sim_tsvd(n = n[i], p = p, m = m, b = b, d = d, rank = rank, h = h, case = case)
 
     a <- c(a,list(sim$A))
     x <- x %>% rbind(sim$X)

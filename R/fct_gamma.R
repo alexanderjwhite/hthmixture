@@ -31,7 +31,8 @@ fct_gamma <- function(x, y, k, N, clust_assign, lambda, selection, alpha, beta, 
     cluster_rows <- which((clust_assign==i))
     n_k <- length(cluster_rows)
     x_k <- x[cluster_rows,] 
-    y_k <- y[cluster_rows, ] 
+    y_k <- y[cluster_rows, ]
+    lambda_k <- lambda[i]
     eta_k <- 3
     
     
@@ -100,7 +101,7 @@ fct_gamma <- function(x, y, k, N, clust_assign, lambda, selection, alpha, beta, 
       # print(sigma_hat)
       # print(rank_hat)
       # print(lam_univ)
-      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lambda, alpha, beta, sigma_hat, "grLasso", y_sparse)
+      model_k_att <- safe_sarrs(y_k, x_k, rank_hat, lambda_k, alpha, beta, sigma_hat, "grLasso", y_sparse)
       if(is.null(model_k_att$error)){
         model_k <- model_k_att$result
         

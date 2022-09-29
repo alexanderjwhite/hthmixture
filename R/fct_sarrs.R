@@ -38,7 +38,7 @@ fct_sarrs <- function(Y,X,r,lam=NULL, alpha = 2*sqrt(3), beta = 1, sigma, ptype 
   if(is.null(lam)){
     fit1_cv <- grpreg::cv.grpreg(XX,YY,group, penalty= ptype, nfolds = 10, family="gaussian")
     fit1 = grpreg::grpreg(XX,YY,group,lambda=fit1_cv$lambda.min, penalty= ptype, family="gaussian")
-    print(fit1_cv$lambda.min)
+    # print(fit1_cv$lambda.min)
     lambda_store[1] <- fit1_cv$lambda.min
   } else {
     fit1 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, family="gaussian")
@@ -71,7 +71,7 @@ fct_sarrs <- function(Y,X,r,lam=NULL, alpha = 2*sqrt(3), beta = 1, sigma, ptype 
   if(is.null(lam)){
     fit2_cv <- grpreg::cv.grpreg(XX,YY,group, penalty= ptype, family="gaussian")
     fit2 = grpreg::grpreg(XX,YY,group,lambda=fit2_cv$lambda.min, penalty= ptype, nfolds = 10, family="gaussian")
-    print(fit2_cv$lambda.min)
+    # print(fit2_cv$lambda.min)
     lambda_store[2] <- fit2_cv$lambda.min
   } else {
     fit2 = grpreg::grpreg(XX,YY,group,lambda=lam, penalty= ptype, nfolds = 10, family="gaussian")

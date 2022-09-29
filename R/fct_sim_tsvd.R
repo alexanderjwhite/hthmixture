@@ -15,7 +15,7 @@
 #' @import MASS
 #'
 #' @examples
-fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, rank = 1, h = 0.2, case = "independent"){
+fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, d = 20, rank = 1, h = 0.2, case = "independent"){
   # u <- rep(0,p)
   # v <- rep(0,m)
   # u_index <- sample(1:p,25, replace = FALSE)
@@ -39,11 +39,11 @@ fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, rank = 1, h = 0.2, ca
   if(p > 25){u <- rbind(u,matrix(0,nrow = p-25,ncol=rank))}
   if(m > 25){v <- rbind(v,matrix(0,nrow = m-25,ncol=rank))}
   # 
-  if(rank > 1){
-    d <- diag(c(20,10,15)[1:rank])
-  } else {
-    d <- 20
-  }
+  # if(rank > 1){
+  #   d <- diag(c(20,10,15)[1:rank])
+  # } else {
+  #   d <- 20
+  # }
   
   c <- u%*%d%*%t(v)
   
