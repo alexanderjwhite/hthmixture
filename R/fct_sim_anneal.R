@@ -56,7 +56,7 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
         count <- 0
         total_iter <- 0
         
-        print(paste("i: ",total_iter, "| changed: ", changed, "| ll", -j_b))
+        cat(paste("\n i: ",total_iter, "| changed: ", changed, "| ll", -j_b))
       }
     } else {
       u <- runif(1) #step 3

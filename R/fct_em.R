@@ -9,7 +9,7 @@ fct_em <- function(x, y, k, lambda, clust_assign, lik_track, clust_store, em_ite
     
     gamma_model <- fct_gamma(x = x, y = y, k = k, N = N, clust_assign = clust_assign, 
                              lambda = lambda, selection = "universal", alpha = 2*sqrt(3), 
-                             beta = 1, y_sparse = FALSE, rank = NULL, max_rank = 3)
+                             beta = 1, y_sparse = TRUE, rank = NULL, max_rank = 3)
     gamma <- gamma_model$gamma
     A <- gamma_model$A
     sig_vec <- gamma_model$sig_vec
