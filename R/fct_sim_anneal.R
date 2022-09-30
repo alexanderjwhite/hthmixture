@@ -50,13 +50,13 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
         count <- count + 1
       } else {
         changed <- sum(a_b != a_t)
-        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(iter,N), assign=clust_assign))
+        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(total_iter,N), assign=clust_assign))
         j_b <- j_t
         a_b <- a_t
         count <- 0
         total_iter <- 0
         
-        print(paste("i: ",iter, "| changed: ", changed, "| ll", -j_b))
+        print(paste("i: ",total_iter, "| changed: ", changed, "| ll", -j_b))
       }
     } else {
       u <- runif(1) #step 3
