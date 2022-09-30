@@ -24,7 +24,7 @@
 #                    alpha = 2*sqrt(3), beta = 1, y_sparse = FALSE, rank = NULL, max_rank = 3, maxiter = 1e3, verbose = TRUE,
 #                    temp = 1000, p1 = 0.9, p2 = 0.95, sim_N = 500, checks = 5, true = NULL){
 hthmix <- function(x, y, k, nstart, init_assign = NULL, init_lambda, alt_iter, anneal_iter, 
-                   em_iter, temp, mu, eps, accept_prop, sim_N){
+                   em_iter, temp, mu, eps, accept_prob, sim_N){
                      
   
   N <- x %>% nrow()
