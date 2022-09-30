@@ -50,7 +50,7 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
         count <- count + 1
       } else {
         changed <- sum(a_b != a_t)
-        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(total_iter,N), assign=clust_assign))
+        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(total_iter,nrow(x)), assign=a_b))
         j_b <- j_t
         a_b <- a_t
         count <- 0
@@ -74,6 +74,6 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
     # print(paste(total_iter, "|", t,"|",count, "|", j_b, "|", j_c,"|",j_t))
     if(total_iter %% 100 == 0){cat(".")}
   }
-  lambda <- fct_select_lambda(x, y, k, clust_assign, initial = FALSE)
-  return(list(assign = a_b, lik_track = track, weighted_ll = j_b, lambda = lambda, clust_store = clust_store))
+  lambda <- fct_select_lambda(x, y, k, a_b, initial = FALSE)
+  return(list(assign = a_b, lik_track = track, weighted_ll = -j_b, lambda = lambda, clust_store = clust_store))
 }
