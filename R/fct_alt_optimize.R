@@ -46,7 +46,7 @@ fct_alt_optimize <- function(x, y, k, clust_assign, lambda, alt_iter, anneal_ite
     
     changed <- sum(clust_assign != clust_assign_old)
     iter <- iter + 1
-    print(paste0("Full Cycle | ", iter, "Changed | ",changed))
+    print(paste0("Full Cycle | ", iter, " Changed | ",changed))
     
     
   }
