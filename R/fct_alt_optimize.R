@@ -19,7 +19,7 @@ fct_alt_optimize <- function(x, y, k, clust_assign, lambda, alt_iter, anneal_ite
   
   
   
-  while(changed > 0 & iter < alt_iter){
+  while(iter < alt_iter){
     
     # EM 
     clust_assign_old <- clust_assign
