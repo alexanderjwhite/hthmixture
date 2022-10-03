@@ -22,6 +22,9 @@ fct_gamma <- function(x, y, k, N, clust_assign, lambda, selection, alpha, beta, 
   m <- dim(y)[2]
   val_frac <- 0.2
   grid <- seq(-5,4,1)
+  if(length(lambda)==1){
+    lambda <- rep(lambda, k)
+  }
  
   gamma <- NULL
   A <- NULL

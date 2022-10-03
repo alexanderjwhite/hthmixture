@@ -1,4 +1,4 @@
-fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE){
+fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE, type = "single"){
   max_rank <- 3
   safe_rank <- purrr::safely(fct_rank)
   if(initial){
@@ -33,7 +33,12 @@ fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE){
     }
   }
   store_mat <- rbind(store[,,1],store[,,2])
-  lambda <- apply(store_mat, 2, median)
+  if(type == "single"){
+    lambda <- median(store_mat)
+  } else {
+    lambda <- apply(store_mat, 2, median)
+  }
+  
   print(paste("Selected Lambda ",lambda))
   return(lambda)
 }
