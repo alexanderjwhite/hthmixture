@@ -20,7 +20,7 @@ fct_em <- function(x, y, k, lambda, clust_assign, lik_track, clust_store, em_ite
     clust_assign_old <- clust_assign
     clust_assign <- fct_update_clust(gamma, N)
     print(clust_assign)
-    clust_store <- clust_store %>% bind_rows(tibble(iter = rep(iter,N), assign=clust_assign))
+    clust_store <- clust_store %>% bind_rows(tibble(iter = rep((max(clust_store$iter)+1),N), assign=clust_assign))
     old_ll <- weighted_ll
     
     

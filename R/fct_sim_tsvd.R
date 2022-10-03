@@ -15,7 +15,7 @@
 #' @import MASS
 #'
 #' @examples
-fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, d = 20, rank = 1, h = 0.2, case = "independent"){
+fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, d = 20, comp = 1, rank = 1, h = 0.2, case = "independent"){
   # u <- rep(0,p)
   # v <- rep(0,m)
   # u_index <- sample(1:p,25, replace = FALSE)
@@ -25,14 +25,14 @@ fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, d = 20, rank = 1, h =
   u1 <- c(sample(c(1,-1), 5, replace = TRUE)*runif(5,h,1),rep(0,20))
   u2 <- c(rep(0,5),sample(c(1,-1), 5, replace = TRUE)*runif(5,h,1),rep(0,15))
   u3 <- c(rep(0,10),sample(c(1,-1), 5, replace = TRUE)*runif(5,h,1),rep(0,10))
-  u <- matrix(cbind(u1,u2,u3)[,1:rank],ncol = rank)
+  u <- matrix(cbind(u1,u2,u3)[,comp],ncol = rank)
   # u[u_index] <- u1
   
   v1 <- c(sample(c(1,-1), 10, replace = TRUE),rep(0,15))
   v2 <- c(rep(0,12),sample(c(1,-1), 10, replace = TRUE),rep(0,3))
   v3 <- c(sample(c(1,-1), 6, replace = TRUE),v1[7:8],-v1[9:10],sample(c(1,-1), 2, replace = TRUE),
           -v1[13:14],v1[15:16],rep(0,9))
-  v <- matrix(cbind(v1,v2,v3)[,1:rank],ncol = rank)
+  v <- matrix(cbind(v1,v2,v3)[,comp],ncol = rank)
   # v[v_index] <- v1
   # u <- matrix(u)
   # v <- matrix(v)
@@ -44,6 +44,11 @@ fct_sim_tsvd <- function(n = 100, p = 200, m = 250, b = 1, d = 20, rank = 1, h =
   # } else {
   #   d <- 20
   # }
+  u_shuffle <- sample(1:p, p)
+  v_shuffle <- sample(1:m, m)
+  
+  u <- matrix(u[u_shuffle,], ncol = rank)
+  v <- matrix(v[v_shuffle,], ncol = rank)
   
   c <- u%*%d%*%t(v)
   

@@ -1,4 +1,4 @@
-fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE, type = "single"){
+fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE, type = "all"){
   max_rank <- 3
   safe_rank <- purrr::safely(fct_rank)
   if(initial){

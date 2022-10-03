@@ -50,7 +50,7 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
         count <- count + 1
       } else {
         changed <- sum(a_b != a_t)
-        clust_store <- clust_store %>% bind_rows(tibble(iter = rep(total_iter,nrow(x)), assign=a_b))
+        clust_store <- clust_store %>% bind_rows(tibble(iter = rep((max(clust_store$iter)+1),nrow(x)), assign=a_b))
         j_b <- j_t
         a_b <- a_t
         count <- 0

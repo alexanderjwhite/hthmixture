@@ -49,9 +49,10 @@ fct_simulate <- function(N = 200, k = 3, sigma = 1, p = 100, m = 50, rank = 2, b
   x <- NULL
   y <- NULL
   a <- NULL
+  comp <- rep(1:3, length.out = k)
   for(i in 1:k){
     
-    sim <- fct_sim_tsvd(n = n[i], p = p, m = m, b = b, d = d, rank = rank, h = h, case = case)
+    sim <- fct_sim_tsvd(n = n[i], p = p, m = m, b = b, d = d, comp = comp[i], rank = rank, h = h, case = case)
 
     a <- c(a,list(sim$A))
     x <- x %>% rbind(sim$X)
