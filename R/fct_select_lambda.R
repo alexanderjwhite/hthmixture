@@ -19,17 +19,20 @@ fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE, typ
       clust_assign <- fct_initialize(k,nrow(x))
     }
     for(j in 1:k){
-      x_k <- x[which(clust_assign==j),]
-      y_k <- y[which(clust_assign==j),]
-      sigma_hat <- fct_sigma(y_k, nrow(y_k), ncol(y_k))
-      
-      rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta = 3)
-      rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
-      rank_hat <- min(rank_hat, max_rank)
-      
-      store[i,j,] <- fct_sarrs(y_k, x_k, r = rank_hat, lam = NULL, 
-                               alpha = 2*sqrt(3), beta = 1, sigma = sigma_hat,
-                               ptype = "grLasso", y_sparse = TRUE)$lambda_store
+      if(length(which(clust_assign==j))>0){
+        x_k <- x[which(clust_assign==j),]
+        y_k <- y[which(clust_assign==j),]
+        sigma_hat <- fct_sigma(y_k, nrow(y_k), ncol(y_k))
+        
+        rank_sest <- safe_rank(x_k, y_k, sigma_hat, eta = 3)
+        rank_hat <- ifelse(is.null(rank_sest$result),1,rank_sest$result)
+        rank_hat <- min(rank_hat, max_rank)
+        
+        store[i,j,] <- fct_sarrs(y_k, x_k, r = rank_hat, lam = NULL, 
+                                 alpha = 2*sqrt(3), beta = 1, sigma = sigma_hat,
+                                 ptype = "grLasso", y_sparse = TRUE)$lambda_store
+      }
+
     }
   }
   store_mat <- rbind(store[,,1],store[,,2])

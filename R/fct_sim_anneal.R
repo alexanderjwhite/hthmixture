@@ -77,7 +77,11 @@ fct_sim_anneal <- function(x, y, k, init_assign, lambda, t_1, mu, eps, p, N, tra
   cat("\n")
   
   if(sum(a_b != init_assign) > 0){
+    
+    lambda_old <- lambda
     lambda <- fct_select_lambda(x, y, k, a_b, initial = FALSE)
+    empty_lam <- which(lambda==0)
+    lambda[empty_lam] <- lambda_old[empty_lam]
   }
   print(paste("sim anneal ll",-fct_j_lik(x, y, k, a_b, lambda)))
   print(a_b)

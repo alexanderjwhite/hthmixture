@@ -27,7 +27,11 @@ fct_em <- function(x, y, k, lambda, clust_assign, lik_track, clust_store, em_ite
     changed <- (clust_assign != clust_assign_old) %>% sum()
     print(paste("i: ",iter, "| changed: ", changed, "| ll", weighted_ll))
     if(changed > 0){
+      lambda_old <- lambda
       lambda <- fct_select_lambda(x, y, k, clust_assign, initial = FALSE)
+      empty_lam <- which(lambda==0)
+      lambda[empty_lam] <- lambda_old[empty_lam]
+
     }
     
   }
