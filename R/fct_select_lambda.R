@@ -19,7 +19,7 @@ fct_select_lambda <- function(x, y, k, clust_assign = NULL, initial = FALSE, typ
       clust_assign <- fct_initialize(k,nrow(x))
     }
     for(j in 1:k){
-      if(length(which(clust_assign==j))>0){
+      if(length(which(clust_assign==j))>2){
         x_k <- x[which(clust_assign==j),]
         y_k <- y[which(clust_assign==j),]
         sigma_hat <- fct_sigma(y_k, nrow(y_k), ncol(y_k))
